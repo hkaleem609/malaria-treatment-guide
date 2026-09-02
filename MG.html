@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>National Malaria Treatment Protocol Portal</title>
+<style>
+  body {
+    background-color: #f1f5f9;
+    margin: 0;
+    padding: 20px 10px;
+    display: flex;
+    justify-content: center;
+  }
+  .med-app-container {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    width: 100%;
+    max-width: 950px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+  }
+  .med-header {
+    background: linear-gradient(135deg, #0f3e7d 0%, #1e5ba8 100%);
+    color: #ffffff;
+    padding: 22px 28px;
+    border-bottom: 3px solid #0c2d59;
+  }
+  .med-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .med-header p {
+    margin: 6px 0 0 0;
+    font-size: 13px;
+    color: #cce0ff;
+  }
+  .med-body {
+    padding: 24px 28px;
+    background-color: #f8fafc;
+  }
+  .med-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
+    background: #ffffff;
+    padding: 18px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 22px;
+  }
+  .med-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .med-form-group label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .med-select {
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 13.5px;
+    color: #1e293b;
+    background-color: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 6px;
+    outline: none;
+    cursor: pointer;
+  }
+  .med-select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+  .med-card {
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    padding: 22px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  }
+  .med-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+  }
+  .med-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+  }
+  .med-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .badge-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+  .badge-danger  { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+  .badge-info    { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+  .badge-warning { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+
+  .med-section {
+    margin-bottom: 18px;
+  }
+  .med-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #64748b;
+    margin-bottom: 8px;
+  }
+  .med-treatment-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .med-dosing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .med-day-pill {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .med-day-pill span {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+  }
+  .med-day-pill strong {
+    font-size: 13px;
+    color: #0f172a;
+  }
+  .med-stat-strip {
+    display: flex;
+    gap: 16px;
+    background: #f1f5f9;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-size: 13px;
+  }
+  .med-alert-box {
+    border-left: 4px solid;
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 13px;
+    margin-top: 6px;
+  }
+  .alert-warning { background: #fffbeb; border-color: #f59e0b; color: #92400e; }
+  .alert-danger  { background: #fef2f2; border-color: #ef4444; color: #991b1b; }
+  .alert-info    { background: #f0f9ff; border-color: #0284c7; color: #075985; }
+</style>
+</head>
+<body>
+
+<div class="med-app-container">
+  <div class="med-header">
+    <h2>🏥 National Malaria Treatment Protocol & Case Management Portal</h2>
+    <p>Official Clinical Decision Support System | Directorate of MEAL & Malaria Control Program</p>
+  </div>
+
+  <div class="med-body">
+    <div class="med-form-grid">
+      <div class="med-form-group">
+        <label for="species-select">Malaria Species</label>
+        <select id="species-select" class="med-select" onchange="runGuidelineEngine()">
+          <option value="pv" selected>Plasmodium vivax (P. vivax)</option>
+          <option value="pf">Plasmodium falciparum (P. falciparum)</option>
+          <option value="mix">Mixed (P. falciparum + P. vivax)</option>
+        </select>
+      </div>
+
+      <div class="med-form-group">
+        <label for="age-select">Age & Weight Band</label>
+        <select id="age-select" class="med-select" onchange="runGuidelineEngine()">
+          <option value="u6m">&lt; 6 Months (&lt; 5 kg)</option>
+          <option value="g1">6 Months – 3 Years (5–14 kg)</option>
+          <option value="g2">3 – 8 Years (15–24 kg)</option>
+          <option value="g3">8 – 12 Years (25–34 kg)</option>
+          <option value="g4" selected>&gt; 12 Years / Adult (&gt; 35 kg)</option>
+        </select>
+      </div>
+
+      <div class="med-form-group">
+        <label for="stock-select">Chloroquine Stock</label>
+        <select id="stock-select" class="med-select" onchange="runGuidelineEngine()">
+          <option value="in_stock" selected>In Stock (Available)</option>
+          <option value="out_stock">Stockout (Unavailable)</option>
+        </select>
+      </div>
+
+      <div class="med-form-group">
+        <label for="status-select">Patient Group</label>
+        <select id="status-select" class="med-select" onchange="runGuidelineEngine()">
+          <option value="general" selected>General (Male / Non-Pregnant)</option>
+          <option value="p1">Pregnant (1st Trimester)</option>
+          <option value="p2">Pregnant (2nd or 3rd Trimester)</option>
+          <option value="lact">Lactating Mother</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="protocol-output"></div>
+  </div>
+</div>
+
+<script>
+const AL_DOSING = {
+  "g1": { label: "6 Months – 3 Years (5–14 kg)", strength: "AL 20/120 mg (Pediatric)", d1: "1 + 1 Tab", d2: "1 + 1 Tab", d3: "1 + 1 Tab", total: 6 },
+  "g2": { label: "3 – 8 Years (15–24 kg)", strength: "AL 20/120 mg (Pediatric)", d1: "2 + 2 Tabs", d2: "2 + 2 Tabs", d3: "2 + 2 Tabs", total: 12 },
+  "g3": { label: "8 – 12 Years (25–34 kg)", strength: "AL 20/120 mg (Pediatric)", d1: "3 + 3 Tabs", d2: "3 + 3 Tabs", d3: "3 + 3 Tabs", total: 18 },
+  "g4": { label: "> 12 Years / Adult (> 35 kg)", strength: "AL 80/480 mg (Adult Blister)", d1: "1 + 1 Tab", d2: "1 + 1 Tab", d3: "1 + 1 Tab", total: 6 }
+};
+
+function runGuidelineEngine() {
+  const species = document.getElementById("species-select").value;
+  const age = document.getElementById("age-select").value;
+  const stock = document.getElementById("stock-select").value;
+  const status = document.getElementById("status-select").value;
+  const out = document.getElementById("protocol-output");
+
+  if (age === "u6m") {
+    out.innerHTML = `
+      <div class="med-card" style="border-left: 5px solid #dc2626;">
+        <div class="med-card-header">
+          <h3 class="med-card-title" style="color: #dc2626;">🚨 URGENT HOSPITAL REFERRAL REQUIRED</h3>
+          <span class="med-badge badge-danger">Pediatric Emergency</span>
+        </div>
+        <p style="font-size: 14px; color: #1e293b; margin: 0 0 10px 0;">
+          <strong>Patient Category:</strong> Infant under 6 months of age or weighing less than 5 kg.
+        </p>
+        <div class="med-alert-box alert-danger">
+          <strong>Clinical Directive:</strong> DO NOT administer routine oral anti-malarials (AL, CQ, or PQ) at the community level.
+          Immediate referral to the nearest RHC or DHQ Hospital is mandatory for inpatient evaluation.
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const al = AL_DOSING[age];
+  const isPregLact = (status === "p1" || status === "p2" || status === "lact");
+  let cardTitle = "", badgeHtml = "", bloodHtml = "", totalHtml = "", pqHtml = "", clinicalHtml = "";
+
+  if (species === "pv") {
+    if (stock === "in_stock") {
+      cardTitle = "Plasmodium vivax — Standard First-Line Regimen";
+      badgeHtml = `<span class="med-badge badge-success">CQ 1st-Line In Stock</span>`;
+      bloodHtml = `
+        <div style="font-size: 14px; color: #0f172a;">
+          <strong>Chloroquine (CQ)</strong> — 25 mg base/kg body weight divided over 3 consecutive days:
+        </div>
+        <div class="med-dosing-grid">
+          <div class="med-day-pill"><span>Day 1</span><strong>10 mg base/kg</strong> (approx. 4 tabs adult)</div>
+          <div class="med-day-pill"><span>Day 2</span><strong>10 mg base/kg</strong> (approx. 4 tabs adult)</div>
+          <div class="med-day-pill"><span>Day 3</span><strong>5 mg base/kg</strong> (approx. 2 tabs adult)</div>
+        </div>
+      `;
+      totalHtml = "Approx. 10 Chloroquine tablets (150 mg base) for adults; weight-adjusted for children.";
+    } else {
+      cardTitle = "Plasmodium vivax — Alternative Regimen (CQ Stockout)";
+      badgeHtml = `<span class="med-badge badge-danger">Chloroquine Stockout</span>`;
+      bloodHtml = `
+        <div class="med-alert-box alert-warning" style="margin-bottom: 10px;">
+          <strong>Stockout Policy:</strong> As per National Treatment Guidelines, <strong>Artemether + Lumefantrine (${al.strength})</strong> is the approved alternative first-line drug when Chloroquine is unavailable.
+        </div>
+        <div class="med-dosing-grid">
+          <div class="med-day-pill"><span>Day 1</span><strong>${al.d1}</strong></div>
+          <div class="med-day-pill"><span>Day 2</span><strong>${al.d2}</strong></div>
+          <div class="med-day-pill"><span>Day 3</span><strong>${al.d3}</strong></div>
+        </div>
+      `;
+      totalHtml = `<strong>${al.total} Tablets</strong> of ${al.strength} (6 total doses over 3 days)`;
+    }
+
+    if (isPregLact) {
+      pqHtml = `<div class="med-alert-box alert-danger"><strong>CONTRAINDICATED:</strong> Do NOT administer Primaquine during pregnancy or lactation. Defer radical cure until delivery and cessation of breastfeeding.</div>`;
+    } else {
+      pqHtml = `<div class="med-alert-box alert-info"><strong>Primaquine Radical Cure:</strong> 0.5 mg/kg body weight once daily for 7 days (taken with food).<br><em>Action: Refer patient to nearest health facility for supervised Primaquine therapy. Monitor for dark urine (G6PD hemolysis).</em></div>`;
+    }
+    clinicalHtml = "Chloroquine must be taken with meals to reduce gastrointestinal irritation. When using AL due to CQ stockout, ensure diagnosis is confirmed by microscopy or RDT.";
+  } else if (species === "pf") {
+    cardTitle = "Plasmodium falciparum — Artemether + Lumefantrine Regimen";
+    badgeHtml = `<span class="med-badge badge-info">Standard ACT Protocol</span>`;
+
+    if (status === "p1") {
+      bloodHtml = `<div class="med-alert-box alert-danger"><strong>1st Trimester Pregnancy Alert:</strong> Treat with <strong>Oral Quinine</strong> (10 mg/kg 8-hourly for 7 days) as per national guidelines. Urgent referral to DHQ Hospital is required.</div>`;
+      totalHtml = "Hospital / Specialized Clinic Managed";
+    } else {
+      bloodHtml = `
+        <div style="font-size: 14px; color: #0f172a;">
+          <strong>Artemether + Lumefantrine (${al.strength})</strong> twice daily for 3 days (6 total doses):
+        </div>
+        <div class="med-dosing-grid">
+          <div class="med-day-pill"><span>Day 1</span><strong>${al.d1}</strong></div>
+          <div class="med-day-pill"><span>Day 2</span><strong>${al.d2}</strong></div>
+          <div class="med-day-pill"><span>Day 3</span><strong>${al.d3}</strong></div>
+        </div>
+      `;
+      totalHtml = `<strong>${al.total} Tablets</strong> of ${al.strength}`;
+    }
+
+    if (isPregLact) {
+      pqHtml = `<div class="med-alert-box alert-danger"><strong>CONTRAINDICATED:</strong> Do NOT administer Primaquine during pregnancy or lactation.</div>`;
+    } else {
+      pqHtml = `<div class="med-alert-box alert-info"><strong>Primaquine Gametocytocidal Dose:</strong> Single dose (0.25 mg/kg body weight) on Day 1 of treatment.<br><em>Action: Community Health Worker must refer patient to nearest health centre for Primaquine administration and follow-up.</em></div>`;
+    }
+    clinicalHtml = "Take AL tablets with milk, fatty food, or a regular meal to maximize lumefantrine absorption. If vomiting occurs within 1 hour, repeat the full dose.";
+  } else {
+    cardTitle = "Mixed Infection (P. falciparum + P. vivax)";
+    badgeHtml = `<span class="med-badge badge-warning">Dual-Action Regimen</span>`;
+    bloodHtml = `
+      <div style="font-size: 14px; color: #0f172a;">
+        <strong>Artemether + Lumefantrine (${al.strength})</strong> twice daily for 3 days (6 total doses):
+      </div>
+      <div class="med-dosing-grid">
+        <div class="med-day-pill"><span>Day 1</span><strong>${al.d1}</strong></div>
+        <div class="med-day-pill"><span>Day 2</span><strong>${al.d2}</strong></div>
+        <div class="med-day-pill"><span>Day 3</span><strong>${al.d3}</strong></div>
+      </div>
+    `;
+    totalHtml = `<strong>${al.total} Tablets</strong> of ${al.strength}`;
+
+    if (isPregLact) {
+      pqHtml = `<div class="med-alert-box alert-danger"><strong>CONTRAINDICATED:</strong> Defer 7-day Primaquine anti-relapse course until delivery and breastfeeding cessation.</div>`;
+    } else {
+      pqHtml = `<div class="med-alert-box alert-info"><strong>Anti-Relapse Radical Cure:</strong> Primaquine 0.5 mg/kg body weight once daily for 7 days (taken with food).<br><em>Action: Refer patient to nearest health facility for supervised 7-day radical cure to eradicate liver hypnozoites.</em></div>`;
+    }
+    clinicalHtml = "Treat acute blood parasitemia with AL immediately. Facility referral for 7-day Primaquine is required to prevent recurrent vivax relapses.";
+  }
+
+  out.innerHTML = `
+    <div class="med-card">
+      <div class="med-card-header">
+        <h3 class="med-card-title">💊 ${cardTitle}</h3>
+        ${badgeHtml}
+      </div>
+      <div class="med-stat-strip">
+        <div>Demographic: <strong>${al.label}</strong></div>
+        <div style="margin-left: auto;">Target Weight: <strong>${al.strength.includes("Adult") ? "> 35 kg" : "Pediatric Weight Band"}</strong></div>
+      </div>
+      <div class="med-section" style="margin-top: 16px;">
+        <div class="med-section-title">🩸 First-Line Blood-Stage Treatment</div>
+        <div class="med-treatment-box">
+          ${bloodHtml}
+          <div style="margin-top: 10px; font-size: 13.5px; color: #334155;">
+            Total Dispensed to Patient: <span style="color: #0f3e7d;">${totalHtml}</span>
+          </div>
+        </div>
+      </div>
+      <div class="med-section">
+        <div class="med-section-title">🔬 Primaquine Therapy & Referral Protocol</div>
+        ${pqHtml}
+      </div>
+      <div class="med-section" style="margin-bottom: 0;">
+        <div class="med-section-title">ℹ️ Clinical Notes & Administration Rules</div>
+        <div style="font-size: 13px; color: #475569; line-height: 1.5; background: #f8fafc; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2e8f0;">
+          ${clinicalHtml}
+        </div>
+      </div>
+    </div>
+  `;
+}
+runGuidelineEngine();
+</script>
+</body>
+</html>
