@@ -3,233 +3,778 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>National Malaria Treatment Protocol Portal</title>
+<meta name="theme-color" content="#13306B">
+<meta name="description" content="Clinical decision support portal for the National Malaria Treatment Protocol — Indus Hospital &amp; Health Network.">
+<title>National Malaria Treatment Protocol | Indus Hospital &amp; Health Network</title>
 <style>
-  body {
-    background-color: #f1f5f9;
-    margin: 0;
-    padding: 20px 10px;
-    display: flex;
-    justify-content: center;
-  }
-  .med-app-container {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    width: 100%;
-    max-width: 950px;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
-    border: 1px solid #e2e8f0;
-  }
-  .med-header {
-    background: linear-gradient(135deg, #0f3e7d 0%, #1e5ba8 100%);
-    color: #ffffff;
-    padding: 22px 28px;
-    border-bottom: 3px solid #0c2d59;
-  }
-  .med-header h2 {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-  }
-  .med-header p {
-    margin: 6px 0 0 0;
-    font-size: 13px;
-    color: #cce0ff;
-  }
-  .med-body {
-    padding: 24px 28px;
-    background-color: #f8fafc;
-  }
-  .med-form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 16px;
-    background: #ffffff;
-    padding: 18px;
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-    margin-bottom: 22px;
-  }
-  .med-form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .med-form-group label {
-    font-size: 12px;
-    font-weight: 700;
-    color: #475569;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .med-select {
-    width: 100%;
-    padding: 9px 12px;
-    font-size: 13.5px;
-    color: #1e293b;
-    background-color: #ffffff;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 6px;
-    outline: none;
-    cursor: pointer;
-  }
-  .med-select:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-  }
-  .med-card {
-    background: #ffffff;
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-    padding: 22px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-  }
-  .med-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #f1f5f9;
-    padding-bottom: 14px;
-    margin-bottom: 16px;
-  }
-  .med-card-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #0f172a;
-    margin: 0;
-  }
-  .med-badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 9999px;
-    font-size: 11.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-  .badge-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-  .badge-danger  { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
-  .badge-info    { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
-  .badge-warning { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+/* ============================================================
+   INDUS HOSPITAL & HEALTH NETWORK — Brand tokens
+   Red  #DC1F26   Blue #1D4A9E
+   ============================================================ */
+:root{
+  --ih-red:#DC1F26;
+  --ih-red-dk:#B0151B;
+  --ih-red-tint:#FDF2F2;
+  --ih-blue:#1D4A9E;
+  --ih-blue-dk:#13306B;
+  --ih-blue-tint:#F2F6FC;
 
-  .med-section {
-    margin-bottom: 18px;
+  --ink:#0E1A2B;
+  --ink-2:#33465F;
+  --muted:#64748B;
+  --line:#DCE4EE;
+  --line-soft:#EDF1F7;
+  --bg:#EBEFF5;
+  --surface:#FFFFFF;
+
+  --ok:#0E7A46;
+  --ok-tint:#EAF7F0;
+  --warn:#B45309;
+  --warn-tint:#FFF8EB;
+  --danger:#B3161C;
+
+  --r-sm:8px;
+  --r-md:12px;
+  --r-lg:16px;
+  --shadow:0 1px 2px rgba(14,26,43,.05), 0 8px 28px rgba(14,26,43,.08);
+  --shadow-sm:0 1px 2px rgba(14,26,43,.06);
+  --font:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --gap:14px;
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+
+html{-webkit-text-size-adjust:100%;}
+
+body{
+  margin:0;
+  background:var(--bg);
+  background-image:linear-gradient(180deg,#E4EAF3 0%, #EBEFF5 260px);
+  font-family:var(--font);
+  color:var(--ink);
+  line-height:1.5;
+  padding:clamp(0px,2.5vw,28px);
+  display:flex;
+  justify-content:center;
+}
+
+.page{
+  width:100%;
+  max-width:1000px;
+  background:var(--surface);
+  border-radius:var(--r-lg);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+/* ---------- Letterhead / brand bar -------------------------- */
+.brandbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+  padding:16px clamp(16px,3vw,28px);
+  background:var(--surface);
+}
+/* To use the official logo file instead of this SVG lockup, drop
+   logo.png beside index.html and replace .lockup-mark with:
+   <img src="logo.png" alt="Indus Hospital & Health Network" class="lockup-mark"> */
+.lockup{display:flex;align-items:center;gap:13px;}
+.lockup-mark{
+  width:clamp(42px,9vw,54px);
+  height:auto;
+  flex:none;
+  display:block;
+}
+.lockup-type{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  font-family:"Arial Black","Segoe UI",Arial,sans-serif;
+  color:var(--ih-blue);
+  line-height:1;
+}
+.lk-word{
+  font-size:clamp(13px,2.9vw,17px);
+  font-weight:900;
+  letter-spacing:.02em;
+  white-space:nowrap;
+}
+.lk-rule{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:var(--ih-red);
+}
+.lk-rule::before,.lk-rule::after{
+  content:"";
+  height:2px;
+  background:var(--ih-red);
+  flex:1;
+  min-width:14px;
+}
+.lk-rule span{
+  font-size:clamp(10px,2.1vw,12px);
+  font-weight:900;
+  line-height:1;
+}
+.brand-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.tag{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:11.5px;
+  font-weight:700;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  background:var(--ih-blue-tint);
+  color:var(--ih-blue);
+  border:1px solid #D6E2F5;
+  white-space:nowrap;
+}
+.tag .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--ok);
+  box-shadow:0 0 0 3px rgba(14,122,70,.15);
+}
+
+/* brand rule under letterhead */
+.brand-rule{height:3px;background:linear-gradient(90deg,var(--ih-red) 0 34%, var(--ih-blue) 34% 100%);}
+
+/* ---------- Title band -------------------------------------- */
+.titleband{
+  background:linear-gradient(135deg,var(--ih-blue-dk) 0%, var(--ih-blue) 62%, #2A5FBD 100%);
+  color:#fff;
+  padding:clamp(18px,3.4vw,26px) clamp(16px,3vw,28px);
+  position:relative;
+  overflow:hidden;
+}
+.titleband::after{
+  content:"";
+  position:absolute;
+  right:-70px;top:-90px;
+  width:280px;height:280px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,255,.10) 0%, rgba(255,255,255,0) 70%);
+  pointer-events:none;
+}
+.titleband h1{
+  margin:0;
+  font-size:clamp(18px,3.6vw,26px);
+  font-weight:800;
+  letter-spacing:-.02em;
+  line-height:1.22;
+}
+.titleband p{
+  margin:8px 0 0;
+  font-size:clamp(12px,2.3vw,13.5px);
+  color:#C9DBF6;
+  max-width:70ch;
+}
+
+/* ---------- Body / steps ------------------------------------ */
+.main{padding:clamp(16px,3vw,28px);background:#F7F9FC;}
+
+.step{margin-bottom:22px;}
+.step:last-child{margin-bottom:0;}
+.step-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+}
+.step-num{
+  width:26px;height:26px;flex:none;
+  border-radius:50%;
+  background:var(--ih-blue);
+  color:#fff;
+  font-size:13px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.step-title{
+  font-size:12.5px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ih-blue-dk);
+  margin:0;
+}
+.step-hint{
+  font-size:12px;
+  color:var(--muted);
+  margin-left:auto;
+  text-align:right;
+}
+
+/* ---------- Form -------------------------------------------- */
+.panel{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r-md);
+  box-shadow:var(--shadow-sm);
+  padding:clamp(14px,2.4vw,20px);
+}
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(215px,1fr));
+  gap:16px;
+}
+.field{display:flex;flex-direction:column;gap:7px;min-width:0;}
+.field label{
+  font-size:11.5px;
+  font-weight:800;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--ink-2);
+}
+.select{
+  -webkit-appearance:none;appearance:none;
+  width:100%;
+  min-height:46px;
+  padding:11px 38px 11px 13px;
+  font-family:inherit;
+  font-size:14.5px;
+  font-weight:500;
+  color:var(--ink);
+  background-color:#fff;
+  border:1.5px solid #C6D2E2;
+  border-radius:var(--r-sm);
+  cursor:pointer;
+  outline:none;
+  transition:border-color .15s, box-shadow .15s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%231D4A9E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 13px center;
+  background-size:12px 8px;
+}
+.select:hover{border-color:#9DB3D2;}
+.select:focus-visible{
+  border-color:var(--ih-blue);
+  box-shadow:0 0 0 3px rgba(29,74,158,.18);
+}
+
+/* ---------- Context chips ----------------------------------- */
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px dashed var(--line);
+}
+.chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 11px;
+  border-radius:999px;
+  background:#F4F7FC;
+  border:1px solid var(--line);
+  font-size:12px;
+  font-weight:600;
+  color:var(--ink-2);
+  max-width:100%;
+}
+.chip b{color:var(--ink);font-weight:700;}
+.chip.is-alert{background:var(--ih-red-tint);border-color:#F6D2D3;color:var(--danger);}
+.chip.is-alert b{color:var(--danger);}
+
+/* ============================================================
+   THE TREATMENT — hero card
+   ============================================================ */
+.rx{
+  position:relative;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r-md);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.rx::before{
+  content:"";
+  position:absolute;left:0;top:0;bottom:0;
+  width:6px;
+  background:linear-gradient(180deg,var(--ih-red) 0%, var(--ih-red-dk) 100%);
+}
+.rx-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:16px clamp(16px,2.6vw,22px);
+  padding-left:calc(6px + clamp(16px,2.6vw,22px));
+  background:linear-gradient(135deg,var(--ih-blue-dk) 0%, var(--ih-blue) 100%);
+  color:#fff;
+}
+.rx-eyebrow{
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:#A9C6F0;
+  margin:0 0 4px;
+}
+.rx-title{
+  margin:0;
+  font-size:clamp(15px,2.7vw,18px);
+  font-weight:700;
+  letter-spacing:-.01em;
+  line-height:1.3;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 12px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  border:1px solid transparent;
+}
+.badge-ok{background:rgba(255,255,255,.16);color:#DFF3E7;border-color:rgba(223,243,231,.45);}
+.badge-alert{background:#FFE9E9;color:var(--danger);border-color:#F7C9CB;}
+.badge-info{background:rgba(255,255,255,.16);color:#DCE9FB;border-color:rgba(220,233,251,.45);}
+.badge-warn{background:#FFF3D6;color:#8A5206;border-color:#F5DFAE;}
+
+.rx-body{padding:clamp(16px,2.6vw,22px);padding-left:calc(6px + clamp(16px,2.6vw,22px));}
+
+/* Drug identity — the single most important line on the page */
+.drug{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  padding-bottom:16px;
+  border-bottom:1px solid var(--line-soft);
+  margin-bottom:18px;
+}
+.drug-icon{
+  width:44px;height:44px;flex:none;
+  border-radius:11px;
+  background:var(--ih-red-tint);
+  border:1px solid #F6D2D3;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--ih-red);
+}
+.drug-icon svg{width:22px;height:22px;}
+.drug-meta{min-width:0;flex:1;}
+.drug-kicker{
+  font-size:11px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);
+  margin-bottom:3px;
+}
+.drug-name{
+  font-size:clamp(20px,4.4vw,29px);
+  font-weight:800;
+  letter-spacing:-.025em;
+  line-height:1.12;
+  color:var(--ih-blue-dk);
+  margin:0;
+  overflow-wrap:break-word;
+}
+.drug-sub{
+  margin-top:7px;
+  display:flex;flex-wrap:wrap;gap:7px;
+}
+.pill-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;
+  border-radius:6px;
+  background:var(--ih-blue-tint);
+  border:1px solid #D6E2F5;
+  color:var(--ih-blue);
+  font-size:12px;font-weight:700;
+}
+.pill-tag.neutral{background:#F4F7FC;border-color:var(--line);color:var(--ink-2);}
+
+/* ---------- 3-day course timeline --------------------------- */
+.course-label{
+  font-size:11.5px;font-weight:800;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);
+  margin-bottom:11px;
+  display:flex;align-items:center;gap:8px;
+}
+.course-label::after{content:"";flex:1;height:1px;background:var(--line-soft);}
+
+.course{
+  list-style:none;
+  margin:0;padding:0;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:var(--gap);
+}
+.day{
+  position:relative;
+  background:linear-gradient(180deg,#FFFFFF 0%, #FBFCFE 100%);
+  border:1.5px solid var(--line);
+  border-radius:var(--r-md);
+  padding:14px 14px 13px;
+  text-align:center;
+  min-width:0;
+}
+/* connector between day cards */
+.day::before{
+  content:"";
+  position:absolute;
+  top:26px;
+  right:100%;
+  width:var(--gap);
+  height:2px;
+  background:var(--line);
+  z-index:0;
+}
+.day:first-child::before{display:none;}
+
+.day-num{
+  position:relative;z-index:1;
+  width:28px;height:28px;
+  margin:0 auto 9px;
+  border-radius:50%;
+  background:var(--ih-blue);
+  color:#fff;
+  font-size:13px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 0 4px #fff;
+}
+.day-label{
+  font-size:10.5px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);
+  margin-bottom:6px;
+}
+.day-dose{
+  font-size:clamp(16px,3.2vw,20px);
+  font-weight:800;
+  color:var(--ink);
+  letter-spacing:-.02em;
+  line-height:1.2;
+  font-variant-numeric:tabular-nums;
+  overflow-wrap:break-word;
+}
+.day-note{
+  margin-top:5px;
+  font-size:11.5px;
+  color:var(--muted);
+  line-height:1.35;
+}
+
+/* ---------- Total dispensed strip --------------------------- */
+.total{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:16px;
+  padding:13px 16px;
+  border-radius:var(--r-sm);
+  background:var(--ih-blue-tint);
+  border:1px solid #D6E2F5;
+}
+.total-key{
+  font-size:11px;font-weight:800;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ih-blue);
+  white-space:nowrap;
+}
+.total-val{
+  font-size:14.5px;font-weight:700;color:var(--ih-blue-dk);
+  margin-left:auto;text-align:right;
+}
+@media (max-width:520px){
+  .total-val{margin-left:0;text-align:left;width:100%;}
+}
+
+/* ---------- Alerts ------------------------------------------ */
+.alert{
+  display:flex;
+  gap:11px;
+  padding:13px 15px;
+  border-radius:var(--r-sm);
+  border:1px solid;
+  border-left-width:4px;
+  font-size:13.5px;
+  line-height:1.55;
+}
+.alert svg{width:17px;height:17px;flex:none;margin-top:2px;}
+.alert strong{font-weight:800;}
+.alert em{font-style:normal;display:block;margin-top:5px;opacity:.9;font-size:12.8px;}
+.alert-danger{background:var(--ih-red-tint);border-color:#F0C4C6;border-left-color:var(--ih-red);color:#7C1015;}
+.alert-warn{background:var(--warn-tint);border-color:#F3E0B8;border-left-color:#D99012;color:#7A4A08;}
+.alert-info{background:#F1F7FE;border-color:#CFE1F7;border-left-color:var(--ih-blue);color:#12386F;}
+.alert-ok{background:var(--ok-tint);border-color:#C3E6D3;border-left-color:var(--ok);color:#0A5C34;}
+
+/* ---------- Supporting sections ----------------------------- */
+.support{margin-top:20px;display:grid;gap:14px;}
+.sec-title{
+  display:flex;align-items:center;gap:8px;
+  font-size:11.5px;font-weight:800;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);
+  margin-bottom:9px;
+}
+.sec-title svg{width:14px;height:14px;color:var(--ih-blue);}
+.note-box{
+  font-size:13.2px;
+  color:var(--ink-2);
+  line-height:1.6;
+  background:#F7F9FC;
+  border:1px solid var(--line);
+  border-radius:var(--r-sm);
+  padding:12px 15px;
+}
+
+/* ---------- Emergency / referral card ----------------------- */
+.emerg{
+  position:relative;
+  background:var(--surface);
+  border:1.5px solid #F0C4C6;
+  border-radius:var(--r-md);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.emerg-head{
+  display:flex;align-items:center;gap:13px;flex-wrap:wrap;
+  padding:18px clamp(16px,2.6vw,22px);
+  background:linear-gradient(135deg,var(--ih-red-dk) 0%, var(--ih-red) 100%);
+  color:#fff;
+}
+.emerg-head svg{width:26px;height:26px;flex:none;}
+.emerg-head h2{
+  margin:0;
+  font-size:clamp(16px,3.2vw,21px);
+  font-weight:800;
+  letter-spacing:-.015em;
+  line-height:1.25;
+}
+.emerg-body{padding:clamp(16px,2.6vw,22px);display:grid;gap:14px;}
+.emerg-fact{
+  font-size:14px;color:var(--ink);
+  background:#F7F9FC;border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:12px 15px;
+}
+
+/* ---------- Toolbar / actions ------------------------------- */
+.toolbar{
+  display:flex;gap:10px;flex-wrap:wrap;
+  margin-top:18px;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  min-height:42px;
+  padding:10px 17px;
+  border-radius:var(--r-sm);
+  border:1.5px solid var(--line);
+  background:#fff;
+  color:var(--ih-blue-dk);
+  font-family:inherit;font-size:13.5px;font-weight:700;
+  cursor:pointer;
+  transition:background .15s,border-color .15s,transform .05s;
+}
+.btn svg{width:16px;height:16px;}
+.btn:hover{background:var(--ih-blue-tint);border-color:#C4D6F0;}
+.btn:active{transform:translateY(1px);}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(29,74,158,.2);}
+
+/* ---------- Footer ------------------------------------------ */
+.foot{
+  padding:18px clamp(16px,3vw,28px);
+  background:var(--surface);
+  border-top:1px solid var(--line);
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  font-size:11.8px;
+  color:var(--muted);
+  line-height:1.55;
+}
+.foot strong{color:var(--ink-2);font-weight:700;}
+.foot-disclaimer{max-width:62ch;}
+
+/* ---------- Motion ------------------------------------------ */
+@keyframes rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+#protocol-output > *{animation:rise .22s ease-out;}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important;}
+}
+
+/* ---------- Small screens ----------------------------------- */
+@media (max-width:640px){
+  body{padding:0;}
+  .page{border-radius:0;border-left:none;border-right:none;}
+  .form-grid{grid-template-columns:1fr;}
+  .course{grid-template-columns:1fr;}
+  /* vertical connector when days stack */
+  .day::before{
+    top:auto;bottom:100%;right:auto;left:calc(50% - 1px);
+    width:2px;height:var(--gap);
   }
-  .med-section-title {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    color: #64748b;
-    margin-bottom: 8px;
-  }
-  .med-treatment-box {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 14px 16px;
-  }
-  .med-dosing-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 10px;
-  }
-  .med-day-pill {
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    padding: 8px 10px;
-    text-align: center;
-  }
-  .med-day-pill span {
-    display: block;
-    font-size: 11px;
-    font-weight: 700;
-    color: #64748b;
-    text-transform: uppercase;
-  }
-  .med-day-pill strong {
-    font-size: 13px;
-    color: #0f172a;
-  }
-  .med-stat-strip {
-    display: flex;
-    gap: 16px;
-    background: #f1f5f9;
-    padding: 10px 14px;
-    border-radius: 6px;
-    margin-top: 10px;
-    font-size: 13px;
-  }
-  .med-alert-box {
-    border-left: 4px solid;
-    border-radius: 6px;
-    padding: 12px 14px;
-    font-size: 13px;
-    margin-top: 6px;
-  }
-  .alert-warning { background: #fffbeb; border-color: #f59e0b; color: #92400e; }
-  .alert-danger  { background: #fef2f2; border-color: #ef4444; color: #991b1b; }
-  .alert-info    { background: #f0f9ff; border-color: #0284c7; color: #075985; }
+  .step-hint{display:none;}
+  .brandbar{padding-bottom:14px;}
+  .drug{gap:11px;}
+  .drug-icon{width:38px;height:38px;border-radius:9px;}
+  .drug-icon svg{width:19px;height:19px;}
+}
+
+/* ---------- Print ------------------------------------------- */
+@media print{
+  body{background:#fff;padding:0;}
+  .page{box-shadow:none;border:none;max-width:100%;border-radius:0;}
+  .titleband{background:#13306B !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .rx-head,.emerg-head,.day-num,.step-num{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .main{background:#fff;padding:14px 0;}
+  .toolbar,.step-hint{display:none !important;}
+  .panel{box-shadow:none;}
+  .select{border-color:#999;}
+  .rx,.emerg,.panel{break-inside:avoid;}
+  .course{grid-template-columns:repeat(3,1fr);}
+}
 </style>
 </head>
 <body>
 
-<div class="med-app-container">
-  <div class="med-header">
-    <h2>🏥 National Malaria Treatment Protocol & Case Management Portal</h2>
-    <p>Official Clinical Decision Support System | Directorate of MEAL & Malaria Control Program</p>
-  </div>
+<div class="page">
 
-  <div class="med-body">
-    <div class="med-form-grid">
-      <div class="med-form-group">
-        <label for="species-select">Malaria Species</label>
-        <select id="species-select" class="med-select" onchange="runGuidelineEngine()">
-          <option value="pv" selected>Plasmodium vivax (P. vivax)</option>
-          <option value="pf">Plasmodium falciparum (P. falciparum)</option>
-          <option value="mix">Mixed (P. falciparum + P. vivax)</option>
-        </select>
-      </div>
-
-      <div class="med-form-group">
-        <label for="age-select">Age & Weight Band</label>
-        <select id="age-select" class="med-select" onchange="runGuidelineEngine()">
-          <option value="u6m">&lt; 6 Months (&lt; 5 kg)</option>
-          <option value="g1">6 Months – 3 Years (5–14 kg)</option>
-          <option value="g2">3 – 8 Years (15–24 kg)</option>
-          <option value="g3">8 – 12 Years (25–34 kg)</option>
-          <option value="g4" selected>&gt; 12 Years / Adult (&gt; 35 kg)</option>
-        </select>
-      </div>
-
-      <div class="med-form-group">
-        <label for="stock-select">Chloroquine Stock</label>
-        <select id="stock-select" class="med-select" onchange="runGuidelineEngine()">
-          <option value="in_stock" selected>In Stock (Available)</option>
-          <option value="out_stock">Stockout (Unavailable)</option>
-        </select>
-      </div>
-
-      <div class="med-form-group">
-        <label for="status-select">Patient Group</label>
-        <select id="status-select" class="med-select" onchange="runGuidelineEngine()">
-          <option value="general" selected>General (Male / Non-Pregnant)</option>
-          <option value="p1">Pregnant (1st Trimester)</option>
-          <option value="p2">Pregnant (2nd or 3rd Trimester)</option>
-          <option value="lact">Lactating Mother</option>
-        </select>
+  <!-- ============ LETTERHEAD ============ -->
+  <header class="brandbar">
+    <div class="lockup">
+      <svg class="lockup-mark" viewBox="0 0 120 92" role="img" aria-label="Indus Hospital and Health Network logo">
+        <defs>
+          <linearGradient id="ihRed" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#E8352F"/>
+            <stop offset=".5" stop-color="#DC1F26"/>
+            <stop offset="1" stop-color="#AE1318"/>
+          </linearGradient>
+        </defs>
+        <path fill="url(#ihRed)" fill-rule="evenodd"
+              d="M18 6 H46 V86 H18 Z
+                 M74 6 H102 V86 H74 Z
+                 M38.8 67.2 A30 16 -45 0 1 81.2 24.8 A30 16 -45 0 1 38.8 67.2 Z"/>
+      </svg>
+      <div class="lockup-type">
+        <div class="lk-word">INDUS HOSPITAL</div>
+        <div class="lk-rule"><span>&amp;</span></div>
+        <div class="lk-word">HEALTH NETWORK</div>
       </div>
     </div>
+    <div class="brand-meta">
+      <span class="tag"><span class="dot"></span>Clinical Decision Support</span>
+    </div>
+  </header>
+  <div class="brand-rule"></div>
 
-    <div id="protocol-output"></div>
+  <!-- ============ TITLE BAND ============ -->
+  <div class="titleband">
+    <h1>National Malaria Treatment Protocol</h1>
+    <p>Case management &amp; prescribing guidance for community and facility-level care &middot; Directorate of MEAL &amp; Malaria Control Program</p>
   </div>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- STEP 1 -->
+    <section class="step">
+      <div class="step-head">
+        <span class="step-num">1</span>
+        <h2 class="step-title">Patient Assessment</h2>
+        <span class="step-hint">Protocol updates automatically</span>
+      </div>
+
+      <div class="panel">
+        <div class="form-grid">
+          <div class="field">
+            <label for="species-select">Malaria Species</label>
+            <select id="species-select" class="select" onchange="runGuidelineEngine()">
+              <option value="pv" selected>Plasmodium vivax (P. vivax)</option>
+              <option value="pf">Plasmodium falciparum (P. falciparum)</option>
+              <option value="mix">Mixed (P. falciparum + P. vivax)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="age-select">Age &amp; Weight Band</label>
+            <select id="age-select" class="select" onchange="runGuidelineEngine()">
+              <option value="u6m">&lt; 6 Months (&lt; 5 kg)</option>
+              <option value="g1">6 Months – 3 Years (5–14 kg)</option>
+              <option value="g2">3 – 8 Years (15–24 kg)</option>
+              <option value="g3">8 – 12 Years (25–34 kg)</option>
+              <option value="g4" selected>&gt; 12 Years / Adult (&gt; 35 kg)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="stock-select">Chloroquine Stock</label>
+            <select id="stock-select" class="select" onchange="runGuidelineEngine()">
+              <option value="in_stock" selected>In Stock (Available)</option>
+              <option value="out_stock">Stockout (Unavailable)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="status-select">Patient Group</label>
+            <select id="status-select" class="select" onchange="runGuidelineEngine()">
+              <option value="general" selected>General (Male / Non-Pregnant)</option>
+              <option value="p1">Pregnant (1st Trimester)</option>
+              <option value="p2">Pregnant (2nd or 3rd Trimester)</option>
+              <option value="lact">Lactating Mother</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="chips" id="context-chips"></div>
+      </div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step">
+      <div class="step-head">
+        <span class="step-num">2</span>
+        <h2 class="step-title">Recommended Treatment</h2>
+      </div>
+
+      <div id="protocol-output" aria-live="polite"></div>
+
+      <div class="toolbar">
+        <button type="button" class="btn" onclick="window.print()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+          Print / Save as PDF
+        </button>
+        <button type="button" class="btn" onclick="resetForm()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+          Reset Selection
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="foot">
+    <div class="foot-disclaimer">
+      <strong>Clinical decision support only.</strong> This tool summarises the National Malaria Treatment Guidelines and does not replace clinical judgement. Confirm diagnosis by microscopy or RDT before initiating treatment.
+    </div>
+    <div>
+      <strong>Indus Hospital &amp; Health Network</strong><br>
+      Directorate of MEAL &amp; Malaria Control Program
+    </div>
+  </footer>
+
 </div>
 
 <script>
+/* ============================================================
+   Dosing reference — Artemether + Lumefantrine by weight band
+   ============================================================ */
 const AL_DOSING = {
   "g1": { label: "6 Months – 3 Years (5–14 kg)", strength: "AL 20/120 mg (Pediatric)", d1: "1 + 1 Tab", d2: "1 + 1 Tab", d3: "1 + 1 Tab", total: 6 },
   "g2": { label: "3 – 8 Years (15–24 kg)", strength: "AL 20/120 mg (Pediatric)", d1: "2 + 2 Tabs", d2: "2 + 2 Tabs", d3: "2 + 2 Tabs", total: 12 },
@@ -237,155 +782,232 @@ const AL_DOSING = {
   "g4": { label: "> 12 Years / Adult (> 35 kg)", strength: "AL 80/480 mg (Adult Blister)", d1: "1 + 1 Tab", d2: "1 + 1 Tab", d3: "1 + 1 Tab", total: 6 }
 };
 
+const SPECIES_LABEL = {
+  pv:  "P. vivax",
+  pf:  "P. falciparum",
+  mix: "Mixed infection"
+};
+const STATUS_LABEL = {
+  general: "Non-pregnant",
+  p1:      "Pregnant · 1st trimester",
+  p2:      "Pregnant · 2nd/3rd trimester",
+  lact:    "Lactating mother"
+};
+const AGE_LABEL = {
+  u6m: "< 6 months (< 5 kg)",
+  g1:  "6 mo – 3 yrs (5–14 kg)",
+  g2:  "3 – 8 yrs (15–24 kg)",
+  g3:  "8 – 12 yrs (25–34 kg)",
+  g4:  "Adult > 12 yrs (> 35 kg)"
+};
+
+/* Inline icons (no external dependencies) */
+const ICON = {
+  capsule: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5a6 6 0 0 1-8.49-8.49l7.5-7.5a6 6 0 0 1 8.49 8.49z"/><path d="m8.5 8.5 7 7"/></svg>`,
+  alert:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>`,
+  info:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`,
+  flask:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v6.5L4.6 18A2 2 0 0 0 6.3 21h11.4a2 2 0 0 0 1.7-3L14 9.5V3"/><path d="M6.5 15h11"/></svg>`,
+  notes:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>`,
+  hospital:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v4"/><path d="M14 8h-4"/><path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"/><path d="M2 22h20"/><path d="M9 22v-4h6v4"/></svg>`
+};
+
+function alertBox(kind, iconKey, html){
+  return `<div class="alert alert-${kind}">${ICON[iconKey]}<div>${html}</div></div>`;
+}
+
+function dayCard(n, label, dose, note){
+  return `<li class="day">
+      <div class="day-num">${n}</div>
+      <div class="day-label">${label}</div>
+      <div class="day-dose">${dose}</div>
+      ${note ? `<div class="day-note">${note}</div>` : ""}
+    </li>`;
+}
+
+function renderChips(species, age, stock, status){
+  const alertStatus = (status === "p1" || status === "p2" || status === "lact");
+  const chips = [
+    `<span class="chip">Species: <b>${SPECIES_LABEL[species]}</b></span>`,
+    `<span class="chip">Patient: <b>${AGE_LABEL[age]}</b></span>`,
+    `<span class="chip${alertStatus ? " is-alert" : ""}">Group: <b>${STATUS_LABEL[status]}</b></span>`,
+    `<span class="chip${stock === "out_stock" ? " is-alert" : ""}">Chloroquine: <b>${stock === "in_stock" ? "In stock" : "Stockout"}</b></span>`
+  ];
+  document.getElementById("context-chips").innerHTML = chips.join("");
+}
+
+function resetForm(){
+  document.getElementById("species-select").value = "pv";
+  document.getElementById("age-select").value     = "g4";
+  document.getElementById("stock-select").value   = "in_stock";
+  document.getElementById("status-select").value  = "general";
+  runGuidelineEngine();
+}
+
+/* ============================================================
+   Guideline engine
+   ============================================================ */
 function runGuidelineEngine() {
   const species = document.getElementById("species-select").value;
-  const age = document.getElementById("age-select").value;
-  const stock = document.getElementById("stock-select").value;
-  const status = document.getElementById("status-select").value;
-  const out = document.getElementById("protocol-output");
+  const age     = document.getElementById("age-select").value;
+  const stock   = document.getElementById("stock-select").value;
+  const status  = document.getElementById("status-select").value;
+  const out     = document.getElementById("protocol-output");
 
+  renderChips(species, age, stock, status);
+
+  /* ---- Infants under 6 months: emergency referral ---------- */
   if (age === "u6m") {
     out.innerHTML = `
-      <div class="med-card" style="border-left: 5px solid #dc2626;">
-        <div class="med-card-header">
-          <h3 class="med-card-title" style="color: #dc2626;">🚨 URGENT HOSPITAL REFERRAL REQUIRED</h3>
-          <span class="med-badge badge-danger">Pediatric Emergency</span>
+      <div class="emerg">
+        <div class="emerg-head">
+          ${ICON.alert}
+          <h2>Urgent Hospital Referral Required</h2>
+          <span class="badge badge-alert" style="margin-left:auto;">Pediatric Emergency</span>
         </div>
-        <p style="font-size: 14px; color: #1e293b; margin: 0 0 10px 0;">
-          <strong>Patient Category:</strong> Infant under 6 months of age or weighing less than 5 kg.
-        </p>
-        <div class="med-alert-box alert-danger">
-          <strong>Clinical Directive:</strong> DO NOT administer routine oral anti-malarials (AL, CQ, or PQ) at the community level.
-          Immediate referral to the nearest RHC or DHQ Hospital is mandatory for inpatient evaluation.
+        <div class="emerg-body">
+          <div class="emerg-fact">
+            <strong>Patient category:</strong> Infant under 6 months of age or weighing less than 5 kg.
+          </div>
+          ${alertBox("danger","alert",
+            `<strong>Clinical Directive:</strong> DO NOT administer routine oral anti-malarials (AL, CQ, or PQ) at the community level.
+             Immediate referral to the nearest RHC or DHQ Hospital is mandatory for inpatient evaluation.`)}
         </div>
-      </div>
-    `;
+      </div>`;
     return;
   }
 
   const al = AL_DOSING[age];
   const isPregLact = (status === "p1" || status === "p2" || status === "lact");
-  let cardTitle = "", badgeHtml = "", bloodHtml = "", totalHtml = "", pqHtml = "", clinicalHtml = "";
+
+  /* ---- Build the regimen ----------------------------------- */
+  let title = "", eyebrow = "First-line regimen", badge = "";
+  let drugName = "", drugTags = [], preAlert = "";
+  let days = "", courseLabel = "3-Day Treatment Course", totalVal = "";
+  let pqHtml = "", clinicalHtml = "", referralOnly = false;
 
   if (species === "pv") {
     if (stock === "in_stock") {
-      cardTitle = "Plasmodium vivax — Standard First-Line Regimen";
-      badgeHtml = `<span class="med-badge badge-success">CQ 1st-Line In Stock</span>`;
-      bloodHtml = `
-        <div style="font-size: 14px; color: #0f172a;">
-          <strong>Chloroquine (CQ)</strong> — 25 mg base/kg body weight divided over 3 consecutive days:
-        </div>
-        <div class="med-dosing-grid">
-          <div class="med-day-pill"><span>Day 1</span><strong>10 mg base/kg</strong> (approx. 4 tabs adult)</div>
-          <div class="med-day-pill"><span>Day 2</span><strong>10 mg base/kg</strong> (approx. 4 tabs adult)</div>
-          <div class="med-day-pill"><span>Day 3</span><strong>5 mg base/kg</strong> (approx. 2 tabs adult)</div>
-        </div>
-      `;
-      totalHtml = "Approx. 10 Chloroquine tablets (150 mg base) for adults; weight-adjusted for children.";
+      title    = "Plasmodium vivax — Standard First-Line Regimen";
+      badge    = `<span class="badge badge-ok">CQ 1st-Line In Stock</span>`;
+      drugName = "Chloroquine (CQ)";
+      drugTags = ["25 mg base/kg total", "Once daily · 3 days", "Take with meals"];
+      days = dayCard(1,"Day 1","10 mg base/kg","≈ 4 tablets (adult)")
+           + dayCard(2,"Day 2","10 mg base/kg","≈ 4 tablets (adult)")
+           + dayCard(3,"Day 3","5 mg base/kg","≈ 2 tablets (adult)");
+      totalVal = "Approx. 10 tablets (150 mg base) for adults · weight-adjusted for children";
     } else {
-      cardTitle = "Plasmodium vivax — Alternative Regimen (CQ Stockout)";
-      badgeHtml = `<span class="med-badge badge-danger">Chloroquine Stockout</span>`;
-      bloodHtml = `
-        <div class="med-alert-box alert-warning" style="margin-bottom: 10px;">
-          <strong>Stockout Policy:</strong> As per National Treatment Guidelines, <strong>Artemether + Lumefantrine (${al.strength})</strong> is the approved alternative first-line drug when Chloroquine is unavailable.
-        </div>
-        <div class="med-dosing-grid">
-          <div class="med-day-pill"><span>Day 1</span><strong>${al.d1}</strong></div>
-          <div class="med-day-pill"><span>Day 2</span><strong>${al.d2}</strong></div>
-          <div class="med-day-pill"><span>Day 3</span><strong>${al.d3}</strong></div>
-        </div>
-      `;
-      totalHtml = `<strong>${al.total} Tablets</strong> of ${al.strength} (6 total doses over 3 days)`;
+      title    = "Plasmodium vivax — Alternative Regimen (CQ Stockout)";
+      badge    = `<span class="badge badge-warn">Chloroquine Stockout</span>`;
+      drugName = "Artemether + Lumefantrine";
+      drugTags = [al.strength, "Twice daily · 3 days", "6 total doses"];
+      preAlert = alertBox("warn","alert",
+        `<strong>Stockout Policy:</strong> As per National Treatment Guidelines, <strong>Artemether + Lumefantrine (${al.strength})</strong> is the approved alternative first-line drug when Chloroquine is unavailable.`);
+      days = dayCard(1,"Day 1",al.d1,"Morning + Evening")
+           + dayCard(2,"Day 2",al.d2,"Morning + Evening")
+           + dayCard(3,"Day 3",al.d3,"Morning + Evening");
+      totalVal = `${al.total} tablets of ${al.strength} · 6 doses over 3 days`;
     }
 
-    if (isPregLact) {
-      pqHtml = `<div class="med-alert-box alert-danger"><strong>CONTRAINDICATED:</strong> Do NOT administer Primaquine during pregnancy or lactation. Defer radical cure until delivery and cessation of breastfeeding.</div>`;
-    } else {
-      pqHtml = `<div class="med-alert-box alert-info"><strong>Primaquine Radical Cure:</strong> 0.5 mg/kg body weight once daily for 7 days (taken with food).<br><em>Action: Refer patient to nearest health facility for supervised Primaquine therapy. Monitor for dark urine (G6PD hemolysis).</em></div>`;
-    }
+    pqHtml = isPregLact
+      ? alertBox("danger","alert",`<strong>CONTRAINDICATED:</strong> Do NOT administer Primaquine during pregnancy or lactation. Defer radical cure until delivery and cessation of breastfeeding.`)
+      : alertBox("info","info",`<strong>Primaquine Radical Cure:</strong> 0.5 mg/kg body weight once daily for 7 days (taken with food).<em>Action: Refer patient to nearest health facility for supervised Primaquine therapy. Monitor for dark urine (G6PD hemolysis).</em>`);
+
     clinicalHtml = "Chloroquine must be taken with meals to reduce gastrointestinal irritation. When using AL due to CQ stockout, ensure diagnosis is confirmed by microscopy or RDT.";
+
   } else if (species === "pf") {
-    cardTitle = "Plasmodium falciparum — Artemether + Lumefantrine Regimen";
-    badgeHtml = `<span class="med-badge badge-info">Standard ACT Protocol</span>`;
+    title = "Plasmodium falciparum — Artemether + Lumefantrine Regimen";
+    badge = `<span class="badge badge-info">Standard ACT Protocol</span>`;
 
     if (status === "p1") {
-      bloodHtml = `<div class="med-alert-box alert-danger"><strong>1st Trimester Pregnancy Alert:</strong> Treat with <strong>Oral Quinine</strong> (10 mg/kg 8-hourly for 7 days) as per national guidelines. Urgent referral to DHQ Hospital is required.</div>`;
-      totalHtml = "Hospital / Specialized Clinic Managed";
+      referralOnly = true;
+      eyebrow  = "Referral regimen";
+      drugName = "Oral Quinine";
+      drugTags = ["10 mg/kg every 8 hours", "7-day course", "Facility-managed"];
+      preAlert = alertBox("danger","alert",
+        `<strong>1st Trimester Pregnancy Alert:</strong> Treat with <strong>Oral Quinine</strong> (10 mg/kg 8-hourly for 7 days) as per national guidelines. Urgent referral to DHQ Hospital is required.`);
+      totalVal = "Hospital / specialized clinic managed";
     } else {
-      bloodHtml = `
-        <div style="font-size: 14px; color: #0f172a;">
-          <strong>Artemether + Lumefantrine (${al.strength})</strong> twice daily for 3 days (6 total doses):
-        </div>
-        <div class="med-dosing-grid">
-          <div class="med-day-pill"><span>Day 1</span><strong>${al.d1}</strong></div>
-          <div class="med-day-pill"><span>Day 2</span><strong>${al.d2}</strong></div>
-          <div class="med-day-pill"><span>Day 3</span><strong>${al.d3}</strong></div>
-        </div>
-      `;
-      totalHtml = `<strong>${al.total} Tablets</strong> of ${al.strength}`;
+      drugName = "Artemether + Lumefantrine";
+      drugTags = [al.strength, "Twice daily · 3 days", "6 total doses"];
+      days = dayCard(1,"Day 1",al.d1,"Morning + Evening")
+           + dayCard(2,"Day 2",al.d2,"Morning + Evening")
+           + dayCard(3,"Day 3",al.d3,"Morning + Evening");
+      totalVal = `${al.total} tablets of ${al.strength}`;
     }
 
-    if (isPregLact) {
-      pqHtml = `<div class="med-alert-box alert-danger"><strong>CONTRAINDICATED:</strong> Do NOT administer Primaquine during pregnancy or lactation.</div>`;
-    } else {
-      pqHtml = `<div class="med-alert-box alert-info"><strong>Primaquine Gametocytocidal Dose:</strong> Single dose (0.25 mg/kg body weight) on Day 1 of treatment.<br><em>Action: Community Health Worker must refer patient to nearest health centre for Primaquine administration and follow-up.</em></div>`;
-    }
+    pqHtml = isPregLact
+      ? alertBox("danger","alert",`<strong>CONTRAINDICATED:</strong> Do NOT administer Primaquine during pregnancy or lactation.`)
+      : alertBox("info","info",`<strong>Primaquine Gametocytocidal Dose:</strong> Single dose (0.25 mg/kg body weight) on Day 1 of treatment.<em>Action: Community Health Worker must refer patient to nearest health centre for Primaquine administration and follow-up.</em>`);
+
     clinicalHtml = "Take AL tablets with milk, fatty food, or a regular meal to maximize lumefantrine absorption. If vomiting occurs within 1 hour, repeat the full dose.";
-  } else {
-    cardTitle = "Mixed Infection (P. falciparum + P. vivax)";
-    badgeHtml = `<span class="med-badge badge-warning">Dual-Action Regimen</span>`;
-    bloodHtml = `
-      <div style="font-size: 14px; color: #0f172a;">
-        <strong>Artemether + Lumefantrine (${al.strength})</strong> twice daily for 3 days (6 total doses):
-      </div>
-      <div class="med-dosing-grid">
-        <div class="med-day-pill"><span>Day 1</span><strong>${al.d1}</strong></div>
-        <div class="med-day-pill"><span>Day 2</span><strong>${al.d2}</strong></div>
-        <div class="med-day-pill"><span>Day 3</span><strong>${al.d3}</strong></div>
-      </div>
-    `;
-    totalHtml = `<strong>${al.total} Tablets</strong> of ${al.strength}`;
 
-    if (isPregLact) {
-      pqHtml = `<div class="med-alert-box alert-danger"><strong>CONTRAINDICATED:</strong> Defer 7-day Primaquine anti-relapse course until delivery and breastfeeding cessation.</div>`;
-    } else {
-      pqHtml = `<div class="med-alert-box alert-info"><strong>Anti-Relapse Radical Cure:</strong> Primaquine 0.5 mg/kg body weight once daily for 7 days (taken with food).<br><em>Action: Refer patient to nearest health facility for supervised 7-day radical cure to eradicate liver hypnozoites.</em></div>`;
-    }
+  } else {
+    title    = "Mixed Infection (P. falciparum + P. vivax)";
+    badge    = `<span class="badge badge-warn">Dual-Action Regimen</span>`;
+    drugName = "Artemether + Lumefantrine";
+    drugTags = [al.strength, "Twice daily · 3 days", "6 total doses"];
+    days = dayCard(1,"Day 1",al.d1,"Morning + Evening")
+         + dayCard(2,"Day 2",al.d2,"Morning + Evening")
+         + dayCard(3,"Day 3",al.d3,"Morning + Evening");
+    totalVal = `${al.total} tablets of ${al.strength}`;
+
+    pqHtml = isPregLact
+      ? alertBox("danger","alert",`<strong>CONTRAINDICATED:</strong> Defer 7-day Primaquine anti-relapse course until delivery and breastfeeding cessation.`)
+      : alertBox("info","info",`<strong>Anti-Relapse Radical Cure:</strong> Primaquine 0.5 mg/kg body weight once daily for 7 days (taken with food).<em>Action: Refer patient to nearest health facility for supervised 7-day radical cure to eradicate liver hypnozoites.</em>`);
+
     clinicalHtml = "Treat acute blood parasitemia with AL immediately. Facility referral for 7-day Primaquine is required to prevent recurrent vivax relapses.";
   }
 
+  const tagsHtml = drugTags.map((t, i) =>
+    `<span class="pill-tag${i === 0 ? "" : " neutral"}">${t}</span>`).join("");
+
   out.innerHTML = `
-    <div class="med-card">
-      <div class="med-card-header">
-        <h3 class="med-card-title">💊 ${cardTitle}</h3>
-        ${badgeHtml}
+    <div class="rx">
+      <div class="rx-head">
+        <div>
+          <p class="rx-eyebrow">${eyebrow}</p>
+          <h2 class="rx-title">${title}</h2>
+        </div>
+        ${badge}
       </div>
-      <div class="med-stat-strip">
-        <div>Demographic: <strong>${al.label}</strong></div>
-        <div style="margin-left: auto;">Target Weight: <strong>${al.strength.includes("Adult") ? "> 35 kg" : "Pediatric Weight Band"}</strong></div>
-      </div>
-      <div class="med-section" style="margin-top: 16px;">
-        <div class="med-section-title">🩸 First-Line Blood-Stage Treatment</div>
-        <div class="med-treatment-box">
-          ${bloodHtml}
-          <div style="margin-top: 10px; font-size: 13.5px; color: #334155;">
-            Total Dispensed to Patient: <span style="color: #0f3e7d;">${totalHtml}</span>
+
+      <div class="rx-body">
+
+        ${preAlert ? `<div style="margin-bottom:18px;">${preAlert}</div>` : ""}
+
+        <div class="drug">
+          <div class="drug-icon">${referralOnly ? ICON.hospital : ICON.capsule}</div>
+          <div class="drug-meta">
+            <div class="drug-kicker">Blood-stage treatment</div>
+            <h3 class="drug-name">${drugName}</h3>
+            <div class="drug-sub">${tagsHtml}</div>
           </div>
         </div>
-      </div>
-      <div class="med-section">
-        <div class="med-section-title">🔬 Primaquine Therapy & Referral Protocol</div>
-        ${pqHtml}
-      </div>
-      <div class="med-section" style="margin-bottom: 0;">
-        <div class="med-section-title">ℹ️ Clinical Notes & Administration Rules</div>
-        <div style="font-size: 13px; color: #475569; line-height: 1.5; background: #f8fafc; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2e8f0;">
-          ${clinicalHtml}
+
+        ${days ? `
+          <div class="course-label">${courseLabel}</div>
+          <ol class="course">${days}</ol>` : ""}
+
+        <div class="total">
+          <span class="total-key">Total dispensed to patient</span>
+          <span class="total-val">${totalVal}</span>
         </div>
+
+        <div class="support">
+          <div>
+            <div class="sec-title">${ICON.flask} Primaquine Therapy &amp; Referral Protocol</div>
+            ${pqHtml}
+          </div>
+          <div>
+            <div class="sec-title">${ICON.notes} Clinical Notes &amp; Administration Rules</div>
+            <div class="note-box">${clinicalHtml}</div>
+          </div>
+        </div>
+
       </div>
-    </div>
-  `;
+    </div>`;
 }
+
 runGuidelineEngine();
 </script>
 </body>
