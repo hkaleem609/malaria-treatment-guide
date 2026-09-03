@@ -454,6 +454,28 @@ input.ctl[type=number]{-moz-appearance:textfield;}
   letter-spacing:.08em;text-transform:uppercase;color:var(--ih-blue);margin-top:5px;
 }
 
+/* ---------- "For information only" dose strip ---------------
+   Community level: the CHW does not dispense Primaquine, so the dose
+   is reference material, not an instruction. Small and red so it can
+   never be mistaken for something to hand over.                     */
+.info-only{
+  margin-top:12px;padding:10px 13px;
+  background:var(--ih-red-tint);
+  border:1px solid #F0C4C6;border-left:3px solid var(--ih-red);
+  border-radius:0 var(--r-sm) var(--r-sm) 0;
+}
+.io-label{
+  font-size:9.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--danger);margin-bottom:5px;
+}
+.io-body{font-size:12.3px;color:#7C1015;line-height:1.55;}
+.io-body strong{font-weight:800;}
+.io-mg{
+  display:inline-block;margin-left:5px;padding:2px 8px;border-radius:999px;
+  background:#fff;border:1px solid #F0C4C6;
+  font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums;
+}
+
 /* ---------- Collapsed opposite lane ------------------------- */
 .lane-alt{margin-top:11px;border:1.5px dashed var(--line);border-radius:var(--r-md);background:#FBFCFD;}
 .lane-alt summary{
@@ -1202,35 +1224,67 @@ function runGuidelineEngine(){
       </div>`;
   } else {
     const mg = w ? `${fmt(pq.rate * w)} mg` : null;
-    pqBlock = `
-      <div class="reg">
-        <div class="reg-head">
-          <span class="reg-n">2</span>
-          <span class="reg-kicker">Primaquine therapy</span>
-          <span class="reg-tagpos"><span class="badge badge-line">First-line regimen</span></span>
-        </div>
-        <div class="drug">
-          <div class="drug-icon">${ICON.shield}</div>
-          <div class="drug-meta">
-            <h3 class="drug-name">Primaquine</h3>
-            <div class="drug-sub">
-              <span class="pill-tag">${pq.rate} mg/kg body weight</span>
-              <span class="pill-tag neutral">${pq.duration}</span>
+
+    const g6pd = ROLE === "community"
+      ? alertBox("warn","alert",
+          `<strong>G6PD haemolysis watch — your job during home follow-up.</strong> Tell the patient that <strong>dark or tea-coloured urine</strong> means stop Primaquine and return to the health facility immediately.`, "mt")
+      : alertBox("warn","alert",
+          `<strong>G6PD haemolysis watch — applies at both levels.</strong> Counsel every patient that <strong>dark or tea-coloured urine</strong> means stop Primaquine and return to the health facility immediately.`, "mt");
+
+    if (ROLE === "community"){
+      /* CHWs never hand Primaquine over, so the referral is the instruction and
+         the dose is only reference for explaining what the facility will do. */
+      pqBlock = `
+        <div class="reg">
+          <div class="reg-head">
+            <span class="reg-n">2</span>
+            <span class="reg-kicker">Primaquine therapy</span>
+            <span class="reg-tagpos"><span class="badge badge-stop">Refer — do not dispense</span></span>
+          </div>
+          ${laneFull(LANE.community, true)}
+          <div class="info-only">
+            <div class="io-label">For information only — dispensed at the facility, not by you</div>
+            <div class="io-body">
+              <strong>Primaquine</strong> — ${pq.rate} mg/kg ${species === "pf"
+                ? "as a single dose on Day 1"
+                : "once daily for 7 days, taken with food"}
+              ${mg ? `<span class="io-mg">${mg}${species === "pf" ? "" : " per dose"} at ${fmt(w)} kg</span>` : ""}
+              <br>Use this to tell the patient what to expect at the BHU / RHC.
             </div>
           </div>
-        </div>
-        ${doseBlock(
-            pq.when,
-            mg ? mg : `${pq.rate} mg/kg`,
-            mg ? `${pq.rate} mg/kg × ${fmt(w)} kg${species === "pf" ? "" : " · each day"}`
-               : "Enter body weight above to calculate the exact dose",
-            `<span style="text-transform:none;letter-spacing:0;font-weight:600;">${pq.purpose}</span>`
-        )}
-        ${species !== "pf" ? `<div class="total"><span class="total-key">Course length</span><span class="total-val">7 daily doses, taken with food</span></div>` : ""}
-        ${pathways()}
-        ${alertBox("warn","alert",
-          `<strong>G6PD haemolysis watch — applies at both levels.</strong> Counsel every patient that <strong>dark or tea-coloured urine</strong> means stop Primaquine and return to the health facility immediately.`, "mt")}
-      </div>`;
+          ${laneCollapsed(LANE.facility)}
+          ${g6pd}
+        </div>`;
+    } else {
+      pqBlock = `
+        <div class="reg">
+          <div class="reg-head">
+            <span class="reg-n">2</span>
+            <span class="reg-kicker">Primaquine therapy</span>
+            <span class="reg-tagpos"><span class="badge badge-line">First-line regimen</span></span>
+          </div>
+          <div class="drug">
+            <div class="drug-icon">${ICON.shield}</div>
+            <div class="drug-meta">
+              <h3 class="drug-name">Primaquine</h3>
+              <div class="drug-sub">
+                <span class="pill-tag">${pq.rate} mg/kg body weight</span>
+                <span class="pill-tag neutral">${pq.duration}</span>
+              </div>
+            </div>
+          </div>
+          ${doseBlock(
+              pq.when,
+              mg ? mg : `${pq.rate} mg/kg`,
+              mg ? `${pq.rate} mg/kg × ${fmt(w)} kg${species === "pf" ? "" : " · each day"}`
+                 : "Enter body weight above to calculate the exact dose",
+              `<span style="text-transform:none;letter-spacing:0;font-weight:600;">${pq.purpose}</span>`
+          )}
+          ${species !== "pf" ? `<div class="total"><span class="total-key">Course length</span><span class="total-val">7 daily doses, taken with food</span></div>` : ""}
+          ${pathways()}
+          ${g6pd}
+        </div>`;
+    }
   }
 
   /* ---- Context chips --------------------------------------- */
