@@ -247,6 +247,25 @@ recoverable. `pathways()` renders the user's lane via `laneFull()` and the other
 `laneCollapsed()` (a native `<details>`). With `ROLE === "both"` both render side by side,
 stacking below 760px.
 
+### Community level inverts the Primaquine block
+
+A CHW never hands Primaquine over, so rendering it as a large first-line drug hero
+invited the wrong action. At `ROLE === "community"` regimen ② is restructured:
+
+1. **The refer card comes first** — `laneFull(LANE.community, true)`, with a red
+   `Refer — do not dispense` badge in the section head instead of the green
+   `First-line regimen` badge
+2. **The dose drops to `.info-only`** — a small red strip labelled *"For information
+   only — dispensed at the facility, not by you"*, framed as what the facility will give
+   so the CHW can brief the patient. **Do not restore the drug hero here** — its size is
+   the whole point.
+3. Facility lane collapsed below, then the G6PD warning
+
+The G6PD text is also role-aware: at community level it is framed as a **home follow-up
+duty**, at facility level as dispensing-time counselling.
+
+Facility and `both` views keep the full dosing hero — those users do dispense.
+
 ### `actionPlan()`
 
 A numbered "what you do" list, ordered by what happens first. Facility steps lead with
