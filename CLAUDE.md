@@ -221,15 +221,45 @@ response for **G6PD-induced haemolytic crises**. That rationale is printed in th
 community lane on purpose — staff who understand *why* comply more reliably than staff
 told only *what*.
 
-`pathways()` renders both lanes side by side (stacking below 760px) so **every user sees
-the difference regardless of their own setting**. The Care Setting select highlights the
-active lane (`.lane.on`) and dims the other (`.lane.off`).
+### The role system — `ROLE`
 
-**The default is `both`, deliberately.** Neither setting is a safe default: defaulting to
-facility could lead a CHW to dispense Primaquine without G6PD backup; defaulting to
-community would send facility staff to refer patients they could treat. Showing both and
-letting the user opt in avoids choosing a wrong default. **Do not "simplify" this to a
-pre-selected setting.**
+Care setting is a property of **the user, not the patient**, so it is not in the Patient
+Details panel. It is asked once and remembered.
+
+- **First visit** → `initRole()` finds no stored value and shows the role gate
+  (`#role-gate`), hiding `#app-main`. Two large targets plus a "show both — decide later"
+  escape.
+- **Stored** in `localStorage` under `nmtp-care-setting`. Every read and write is wrapped
+  in try/catch — private browsing throws, and the page must still work (it falls back to
+  asking again, which is harmless).
+- **`ROLE`** is one of `facility` | `community` | `both`. `both` is a legitimate state,
+  not an error — it is what the skip link produces.
+- **Header role chip** (`#role-chip`) shows the active setting and reopens the gate in one
+  tap. It replaces the "Clinical Decision Support" tag when a role is set.
+
+**Why the chip must stay visible:** shared devices. A tablet at a BHU is used by several
+staff, and a wrong remembered role that is invisible would give confidently wrong guidance
+with no cue. The chip makes the current state obvious and correctable.
+
+**Why the other lane is collapsed, never deleted:** a CHW writing a referral slip needs to
+know what happens at the facility they are referring to, and a wrong role must stay
+recoverable. `pathways()` renders the user's lane via `laneFull()` and the other via
+`laneCollapsed()` (a native `<details>`). With `ROLE === "both"` both render side by side,
+stacking below 760px.
+
+### `actionPlan()`
+
+A numbered "what you do" list, ordered by what happens first. Facility steps lead with
+diagnosis, dispensing, contraindication screening and haemolysis counselling; community
+steps lead with RDT confirmation, blood-stage dispensing, the referral slip and home
+follow-up. Steps that are prohibitions get `.stop` (red, renders `!` instead of a number).
+
+With `ROLE === "both"` it shows a prompt to choose a setting rather than a generic list —
+a merged list would be wrong for both audiences.
+
+**`[hidden]{display:none !important}`** is declared near the reset. Author `display`
+rules (`.rolechip`, `.tag` are `inline-flex`) outrank the UA `[hidden]` rule, so without
+it the gate toggling silently fails.
 
 The exact national-protocol sentence is quoted in the community lane
 (`.protocol-quote`) — keep it verbatim, it is the authority for the referral requirement.
