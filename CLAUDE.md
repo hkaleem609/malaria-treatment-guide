@@ -102,27 +102,43 @@ There is a comment in `index.html` marking the spot.
 
 ```
 Letterhead      logo lockup + "Clinical Decision Support" tag, red/blue rule
-Title band      navy gradient, page title + program attribution
-Step 1          Patient Assessment — 4 selects + context chip row
-Step 2          Recommended Treatment — the Rx hero card (#protocol-output)
-Toolbar         Print / Save as PDF, Reset Selection
+Title band      title, one-line lede, 3-step orientation strip
+Step 1          Patient Details — compact 5-control panel (#assess)
+Step 2          Recommended protocol — the Rx card (#protocol-output)
+Toolbar         Print / Save as PDF, Reset
 Footer          clinical disclaimer + attribution
 ```
 
+### The assessment panel is deliberately small
+
+It is a thin bar, not a form. Controls are 42px, labels are 10.5px, option text is
+abbreviated (`P. vivax`, not `Plasmodium vivax (P. vivax)`) so the panel stays one or two
+rows on desktop. A first-visit cue (`.assess.cue`, a twice-repeating box-shadow pulse
+removed on first interaction) plus the "Select below — the protocol updates instantly"
+hint tell a new user where to start. **Do not let this panel grow** — every row added
+here is a row stolen from the treatment.
+
 ### The Rx card is the hero
 
-Everything else is subordinate to it. The visual hierarchy exists specifically to
-**reduce cognitive load** for a clinician reading under time pressure:
+Everything else is subordinate to it. The hierarchy exists to **reduce cognitive load**
+for a clinician reading under time pressure. The card holds two numbered regimen blocks
+rendered in the *same* visual language, so neither reads as an afterthought:
 
-1. **Drug name** at ~29px is the largest text on the page — the single most important fact
-2. **Strength / frequency tags** immediately beneath it
-3. **3-day dosing timeline** — numbered day markers joined by a connector rail, large
-   tabular-figure doses, and "Morning + Evening" notes that decode what `2 + 2 Tabs` means
-4. **Total dispensed** strip
-5. Primaquine protocol and clinical notes, demoted below so they do not compete
+```
+Rx header      context chips (species · band · weight · group · stockout)
+① Blood-stage treatment    drug name → tags → day timeline → total
+② Primaquine therapy       drug name → tags → dose block → referral note
+Clinical notes
+```
 
-Preserve this ordering when editing. If something new is added, it goes below the
-timeline unless it is more urgent than the drug name.
+Within each block: **drug name** (~27px, the largest text on the page) → strength and
+frequency tags → dosing schedule → totals. New content goes *below* the schedule unless
+it outranks the drug name in urgency.
+
+Two schedule renderers exist — use the right one:
+- `dayCard()` / `.course` — the connected 3-day timeline, for day-by-day varying doses
+- `doseBlock()` — one wide row, for a single dose or an identical dose repeated N days
+  (rendering seven identical Primaquine cards would be noise, not information)
 
 ### Responsive behaviour
 
@@ -145,35 +161,73 @@ Reads the four selects, then branches. **The clinical content is authoritative �
 reword dosing text, drug names, or directives without an explicit instruction to do so.**
 Presentation can change freely; medical substance cannot.
 
+**Source of truth:** the national weight-based dosing protocol sheet
+(`3U_Malaria_Treatment_Protocol_EN.pdf`, an English translation of the Urdu original).
+Both dosing tables in the code are transcribed from it. Check any dosing change against
+that sheet before making it.
+
 ### Decision order
 
 1. **Age `u6m` (< 6 months / < 5 kg)** — short-circuits everything. Renders the red
-   emergency referral card. No dosing is shown for any species. Checked first, before
-   species, deliberately.
+   emergency referral card. No dosing for any species. Checked first, before species,
+   deliberately.
 
 2. **P. vivax**
-   - CQ in stock → **Chloroquine**, 25 mg base/kg over 3 days (10 / 10 / 5 mg base/kg)
-   - CQ stockout → **Artemether + Lumefantrine** as approved alternative, with a
-     stockout policy warning banner
+   - CQ available → **Chloroquine**, 25 mg/kg over 3 days (10 / 10 / 5 mg/kg)
+   - CQ stockout → **Artemether + Lumefantrine**, with the protocol's footnote shown as
+     a warning: second-line, but usable as first-line for uncomplicated vivax *provided
+     the case is confirmed by microscopy or RDT*
 
-3. **P. falciparum**
-   - 1st trimester pregnancy → **Oral Quinine** 10 mg/kg 8-hourly × 7 days + urgent
-     DHQ referral. Renders as referral-only, no dosing timeline.
-   - Otherwise → **Artemether + Lumefantrine**
+3. **P. falciparum** → **Artemether + Lumefantrine**
 
-4. **Mixed infection** → **Artemether + Lumefantrine** + 7-day Primaquine radical cure
+4. **Mixed infection** → **Artemether + Lumefantrine**
 
-### Primaquine
+### Pregnancy
 
-Contraindicated in pregnancy and lactation in **all** branches — `isPregLact` gates this.
-Otherwise the dose differs by species: 0.5 mg/kg × 7 days for vivax and mixed
-(radical cure), single 0.25 mg/kg on Day 1 for falciparum (gametocytocidal).
+The patient group select has **three** options — `general`, `preg`, `lact`. Trimester is
+deliberately *not* asked (the user asked for a single "Pregnant" option).
 
-### `AL_DOSING`
+Because trimester is unknown, **any branch using AL for a pregnant patient shows a red
+alert** telling staff to confirm gestational age and referring to oral Quinine
+(10 mg/kg 8-hourly × 7 days) for the first trimester. This alert is the only thing
+carrying that safety information — **do not remove it** without restoring a trimester
+input. Chloroquine branches do not need it.
 
-Weight-band table for Artemether + Lumefantrine. Keys `g1`–`g4` match the age select
-values. `d1`/`d2`/`d3` are per-day doses written as `morning + evening`; `total` is the
-tablet count for the full course.
+### Primaquine — regimen block ②
+
+Rendered as a full first-line regimen, not a footnote. Dose by species:
+
+| Species | Rate | Schedule | Purpose |
+|---|---|---|---|
+| P. falciparum | 0.25 mg/kg | Single dose, Day 1 | Gametocytocidal — blocks transmission |
+| P. vivax / Mixed | 0.5 mg/kg | Once daily × 7 days, with food | Radical cure — clears liver hypnozoites |
+
+**Contraindicated in pregnancy and lactation** — `isPregLact` swaps the block to a struck
+-through "Contraindicated" state. The block still renders rather than disappearing, so the
+clinician can see Primaquine was considered and deferred.
+
+Every Primaquine state carries a **referral note** (`referralNote()`, the dashed blue
+panel). The protocol requires the community health worker to refer to the nearest health
+centre and follow up; the wording is specific to each case — 7-day supervised radical cure
+for vivax/mixed, supervised single dose for falciparum, deferred-and-scheduled when
+contraindicated.
+
+### Dosing tables
+
+- **`AL_DOSING`** — Artemether + Lumefantrine tablets per dose, twice daily × 3 days.
+  Keys `g1`–`g4` match the age select. `d` is a 3-element array of `morning + evening`
+  strings. Underlying rate: Artemether 1.7 mg/kg, Lumefantrine 12 mg/kg.
+- **`CQ_TABLE`** — Chloroquine tablets per day by body weight, from 11–15 kg through
+  > 50 kg. Looked up with `cqRow(w)`, which returns the first row where `w <= r.max`, or
+  `null` below 11 kg (the table's floor — falls back to showing the mg/kg rule).
+
+### Body weight
+
+Optional. When present it drives exact CQ tablet counts and exact Primaquine mg; when
+absent the page falls back to mg/kg rules and prompts for it. `checkWeight()` compares the
+entered weight against `bandFromWeight()` and shows an amber caution if it disagrees with
+the selected age band — tablet dosing follows weight, so a mismatch is a real error worth
+surfacing rather than silently resolving.
 
 ---
 
