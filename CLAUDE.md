@@ -135,10 +135,14 @@ Within each block: **drug name** (~27px, the largest text on the page) → stren
 frequency tags → dosing schedule → totals. New content goes *below* the schedule unless
 it outranks the drug name in urgency.
 
-Two schedule renderers exist — use the right one:
-- `dayCard()` / `.course` — the connected 3-day timeline, for day-by-day varying doses
-- `doseBlock()` — one wide row, for a single dose or an identical dose repeated N days
-  (rendering seven identical Primaquine cards would be noise, not information)
+Both regimens use the same timeline so they read as the same kind of thing:
+- `dayCard()` / `.course` — the 3-day blood-stage timeline
+- `.course.week` — a tighter variant sized so **seven** Primaquine days fit one row on
+  desktop, and a compact multi-column grid of small chips on phones (seven full-width
+  rows would be too much scrolling). `.course.week.short` caps card width so the
+  falciparum single-dose card does not stretch across the full row.
+- `pqCourse()` picks between them: 1 card for falciparum's Day 1 dose, 7 for the
+  vivax/mixed radical cure
 
 ### Responsive behaviour
 
