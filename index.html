@@ -27,6 +27,8 @@
 }
 *,*::before,*::after{box-sizing:border-box;}
 html{-webkit-text-size-adjust:100%;}
+/* author display rules outrank the UA [hidden] rule — restore it */
+[hidden]{display:none !important;}
 body{
   margin:0; background:var(--bg);
   background-image:linear-gradient(180deg,#E4EAF3 0%, #EBEFF5 240px);
@@ -67,6 +69,58 @@ body{
 }
 .tag .dot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(14,122,70,.15);}
 .brand-rule{height:3px;background:linear-gradient(90deg,var(--ih-red) 0 34%, var(--ih-blue) 34% 100%);}
+
+/* ---------- Role chip --------------------------------------- */
+.brand-right{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.rolechip{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:6px 12px 6px 10px;border-radius:999px;
+  border:1.5px solid #D6E2F5;background:var(--ih-blue-tint);
+  color:var(--ih-blue-dk);font-family:inherit;cursor:pointer;
+  transition:border-color .15s,background .15s;
+}
+.rolechip:hover{border-color:#B4CCEC;background:#E9F0FA;}
+.rolechip:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(29,74,158,.2);}
+.rolechip svg{width:15px;height:15px;color:var(--ih-blue);flex:none;}
+.rolechip b{font-size:12px;font-weight:800;white-space:nowrap;}
+.rolechip em{
+  font-style:normal;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--muted);padding-left:8px;border-left:1px solid #CBD9EE;
+}
+
+/* ---------- Role gate (first visit) ------------------------- */
+.gate{padding:clamp(22px,4.5vw,44px) clamp(14px,3vw,26px);background:#F7F9FC;}
+.gate-inner{max-width:740px;margin:0 auto;text-align:center;}
+.gate h2{margin:0;font-size:clamp(19px,3.6vw,26px);font-weight:800;letter-spacing:-.022em;color:var(--ih-blue-dk);}
+.gate p{margin:10px auto 0;max-width:56ch;font-size:clamp(12.5px,2.4vw,14.5px);color:var(--ink-2);line-height:1.6;}
+.gate-opts{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:22px;}
+@media (max-width:640px){ .gate-opts{grid-template-columns:1fr;} }
+.gate-card{
+  display:block;width:100%;padding:18px;text-align:left;
+  background:#fff;border:2px solid var(--line);border-radius:14px;
+  font-family:inherit;cursor:pointer;
+  transition:border-color .15s,box-shadow .15s,transform .06s;
+}
+.gate-card:hover{transform:translateY(-2px);}
+.gate-card.give:hover{border-color:#8FCFAE;box-shadow:0 6px 20px rgba(14,122,70,.13);}
+.gate-card.refer:hover{border-color:#EFAFB2;box-shadow:0 6px 20px rgba(220,31,38,.12);}
+.gate-card:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(29,74,158,.25);}
+.gate-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:13px;}
+.gate-ico svg{width:21px;height:21px;}
+.gate-card.give .gate-ico{background:var(--ok-tint);border:1px solid #C3E6D3;color:var(--ok);}
+.gate-card.refer .gate-ico{background:var(--ih-red-tint);border:1px solid #F6D2D3;color:var(--ih-red);}
+.gate-lvl{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.gate-where{font-size:clamp(15px,3vw,18px);font-weight:800;color:var(--ink);letter-spacing:-.018em;margin-top:2px;}
+.gate-act{font-size:12.8px;font-weight:700;margin-top:10px;padding-top:10px;border-top:1px solid var(--line-soft);}
+.gate-card.give .gate-act{color:var(--ok);}
+.gate-card.refer .gate-act{color:var(--ih-red);}
+.gate-skip{
+  margin-top:15px;background:none;border:none;padding:9px 10px;
+  font-family:inherit;font-size:12.5px;font-weight:700;color:var(--muted);
+  text-decoration:underline;text-underline-offset:3px;cursor:pointer;
+}
+.gate-skip:hover{color:var(--ih-blue);}
+.gate-skip:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(29,74,158,.2);border-radius:6px;}
 
 /* ---------- Title band + orientation strip ------------------ */
 .titleband{
@@ -400,6 +454,67 @@ input.ctl[type=number]{-moz-appearance:textfield;}
   letter-spacing:.08em;text-transform:uppercase;color:var(--ih-blue);margin-top:5px;
 }
 
+/* ---------- Collapsed opposite lane ------------------------- */
+.lane-alt{margin-top:11px;border:1.5px dashed var(--line);border-radius:var(--r-md);background:#FBFCFD;}
+.lane-alt summary{
+  list-style:none;cursor:pointer;padding:11px 14px;
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+  font-size:12.4px;font-weight:700;color:var(--ink-2);
+}
+.lane-alt summary::-webkit-details-marker{display:none;}
+.lane-alt summary::after{
+  content:"";margin-left:auto;width:7px;height:7px;flex:none;
+  border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);
+  transform:rotate(45deg);transition:transform .15s;
+}
+.lane-alt[open] summary::after{transform:rotate(-135deg);}
+.lane-alt summary:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(29,74,158,.2);border-radius:10px;}
+.lane-alt .mini{
+  font-size:9.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--muted);background:#fff;border:1px solid var(--line);padding:3px 8px;border-radius:999px;
+}
+.lane-alt-body{padding:0 14px 13px;}
+.lane-alt-body ul{margin:0;padding-left:16px;font-size:12.1px;line-height:1.55;color:var(--ink-2);}
+.lane-alt-body li{margin-bottom:5px;}
+.lane-alt-body li:last-child{margin-bottom:0;}
+
+/* ---------- Role action plan -------------------------------- */
+.actions{margin-top:17px;padding-top:15px;border-top:1px solid var(--line-soft);}
+.actions-title{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:12px;
+}
+.actions-title svg{width:14px;height:14px;color:var(--ih-blue);}
+.actions-title .who{
+  margin-left:auto;text-transform:none;letter-spacing:0;font-size:11px;font-weight:700;
+  color:var(--ih-blue);background:var(--ih-blue-tint);border:1px solid #D6E2F5;
+  padding:3px 9px;border-radius:999px;
+}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s;}
+.steps li{position:relative;padding-left:33px;margin-bottom:11px;font-size:12.9px;line-height:1.55;color:var(--ink-2);}
+.steps li:last-child{margin-bottom:0;}
+.steps li::before{
+  counter-increment:s;content:counter(s);
+  position:absolute;left:0;top:-1px;width:23px;height:23px;border-radius:50%;
+  background:var(--ih-blue-tint);border:1px solid #D0DEF3;color:var(--ih-blue);
+  font-size:11.5px;font-weight:800;display:flex;align-items:center;justify-content:center;
+}
+.steps li.stop::before{background:var(--ih-red-tint);border-color:#F0C4C6;color:var(--danger);content:"!";}
+.steps li strong{color:var(--ink);font-weight:700;}
+.steps li.stop strong{color:var(--danger);}
+.steps-prompt{
+  display:flex;align-items:center;gap:11px;flex-wrap:wrap;
+  background:var(--ih-blue-tint);border:1px solid #D6E2F5;border-radius:var(--r-sm);
+  padding:12px 14px;font-size:12.7px;color:#12386F;line-height:1.5;
+}
+.steps-prompt button{
+  margin-left:auto;background:var(--ih-blue);color:#fff;border:none;border-radius:6px;
+  padding:9px 15px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;
+}
+.steps-prompt button:hover{background:var(--ih-blue-dk);}
+.steps-prompt button:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(29,74,158,.3);}
+
 /* ---------- Clinical notes ---------------------------------- */
 .notes{margin-top:17px;padding-top:15px;border-top:1px solid var(--line-soft);}
 .notes-title{
@@ -475,7 +590,8 @@ input.ctl[type=number]{-moz-appearance:textfield;}
     -webkit-print-color-adjust:exact;print-color-adjust:exact;
   }
   .main{background:#fff;padding:12px 0;}
-  .toolbar,.howto,.assess-head .cue-text{display:none !important;}
+  .toolbar,.howto,.assess-head .cue-text,.gate,.rolechip em{display:none !important;}
+  .lane-alt[open] .lane-alt-body{display:block;}
   .assess{box-shadow:none;}
   .course{grid-template-columns:repeat(3,1fr);}
   .rx,.emerg,.assess,.reg{break-inside:avoid;}
@@ -504,7 +620,14 @@ input.ctl[type=number]{-moz-appearance:textfield;}
         <div class="lk-word">HEALTH NETWORK</div>
       </div>
     </div>
-    <span class="tag"><span class="dot"></span>Clinical Decision Support</span>
+    <div class="brand-right">
+      <span class="tag" id="cds-tag"><span class="dot"></span>Clinical Decision Support</span>
+      <button type="button" class="rolechip" id="role-chip" hidden onclick="openRoleGate()"
+              aria-label="Change your care setting">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <b id="role-chip-text"></b><em>Change</em>
+      </button>
+    </div>
   </header>
   <div class="brand-rule"></div>
 
@@ -518,7 +641,33 @@ input.ctl[type=number]{-moz-appearance:textfield;}
     </div>
   </div>
 
-  <main class="main">
+  <!-- ============ ROLE GATE — first visit only ============ -->
+  <section class="gate" id="role-gate" hidden>
+    <div class="gate-inner">
+      <h2>Where are you working?</h2>
+      <p>Dispensing rules differ by level — especially for Primaquine. Tell us your setting once and the protocol will be written for your role. You can change it any time.</p>
+
+      <div class="gate-opts">
+        <button type="button" class="gate-card give" onclick="setRole('facility')">
+          <div class="gate-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v4"/><path d="M14 8h-4"/><path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"/><path d="M2 22h20"/><path d="M9 22v-4h6v4"/></svg></div>
+          <div class="gate-lvl">Facility level</div>
+          <div class="gate-where">BHU / RHC</div>
+          <div class="gate-act">You dispense Primaquine on site</div>
+        </button>
+
+        <button type="button" class="gate-card refer" onclick="setRole('community')">
+          <div class="gate-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg></div>
+          <div class="gate-lvl">Community level</div>
+          <div class="gate-where">iCCM / frontline CHW</div>
+          <div class="gate-act">You refer patients for Primaquine</div>
+        </button>
+      </div>
+
+      <button type="button" class="gate-skip" onclick="setRole('both')">Show both levels — decide later</button>
+    </div>
+  </section>
+
+  <main class="main" id="app-main" hidden>
 
     <!-- ============ STEP 1 — compact assessment ============ -->
     <section class="assess cue" id="assess">
@@ -575,14 +724,6 @@ input.ctl[type=number]{-moz-appearance:textfield;}
           </select>
         </div>
 
-        <div class="f">
-          <label for="setting-select">Care Setting</label>
-          <select id="setting-select" class="ctl" onchange="runGuidelineEngine()">
-            <option value="both" selected>Show both levels</option>
-            <option value="facility">Facility — BHU / RHC</option>
-            <option value="community">Community — iCCM / CHW</option>
-          </select>
-        </div>
       </div>
 
       <div class="mismatch" id="weight-mismatch">
@@ -717,9 +858,59 @@ function resetForm(){
   document.getElementById("age-select").value     = "g4";
   document.getElementById("stock-select").value   = "in_stock";
   document.getElementById("status-select").value  = "general";
-  document.getElementById("setting-select").value = "both";
   document.getElementById("weight-input").value   = "";
   runGuidelineEngine();
+}
+
+/* ============================================================
+   CARE SETTING (role) — asked once, remembered per browser.
+   "both" is a valid state: it shows the two pathways side by
+   side and is what the skip link and private-browsing produce.
+   ============================================================ */
+const ROLE_KEY = "nmtp-care-setting";
+let ROLE = "both";
+
+const ROLE_LABEL = {
+  facility:  "Facility · BHU / RHC",
+  community: "Community · iCCM / CHW"
+};
+
+function showGate(on){
+  document.getElementById("role-gate").hidden = !on;
+  document.getElementById("app-main").hidden  =  on;
+}
+function renderRoleChip(){
+  const chip = document.getElementById("role-chip");
+  const tag  = document.getElementById("cds-tag");
+  if (ROLE === "both"){ chip.hidden = true; tag.hidden = false; return; }
+  tag.hidden = true; chip.hidden = false;
+  document.getElementById("role-chip-text").textContent = ROLE_LABEL[ROLE];
+}
+function setRole(role){
+  ROLE = role;
+  try { localStorage.setItem(ROLE_KEY, role); } catch(e){ /* private mode — session only */ }
+  showGate(false);
+  renderRoleChip();
+  runGuidelineEngine();
+  window.scrollTo(0, 0);
+}
+function openRoleGate(){
+  showGate(true);
+  window.scrollTo(0, 0);
+}
+function initRole(){
+  let saved = null;
+  try { saved = localStorage.getItem(ROLE_KEY); } catch(e){ /* ignore */ }
+
+  if (saved === "facility" || saved === "community" || saved === "both"){
+    ROLE = saved;
+    showGate(false);
+    renderRoleChip();
+    runGuidelineEngine();
+  } else {
+    showGate(true);          // first visit — ask before showing the tool
+    renderRoleChip();
+  }
 }
 
 /* ============================================================
@@ -751,6 +942,13 @@ function runGuidelineEngine(){
           ${alertBox("danger","alert",
             `<strong>Clinical Directive:</strong> DO NOT administer routine oral anti-malarials (AL, CQ, or PQ) at the community level.
              Immediate referral to the nearest RHC or DHQ Hospital is mandatory for inpatient evaluation.`)}
+          ${ROLE === "community"
+            ? alertBox("warn","route",
+                `<strong>At community level:</strong> do not give any anti-malarial. Refer this infant immediately and accompany or arrange transport where possible, then follow up at the home to confirm the referral was completed.`)
+            : ROLE === "facility"
+            ? alertBox("info","hospital",
+                `<strong>At facility level:</strong> assess for severe malaria and admit, or refer onward to DHQ Hospital for inpatient management. Age under 6 months is also a Primaquine contraindication.`)
+            : ""}
         </div>
       </div>`;
     return;
@@ -833,8 +1031,6 @@ function runGuidelineEngine(){
   }
 
   /* ---- Regimen 2: Primaquine ------------------------------- */
-  const setting = document.getElementById("setting-select").value;   // both | facility | community
-
   const pq = (species === "pf")
     ? { rate:0.25, when:"Day 1 only", duration:"Single dose on the first day of treatment",
         purpose:"Gametocytocidal — blocks onward transmission",
@@ -845,60 +1041,138 @@ function runGuidelineEngine(){
         facilityDose:"Dispense the <strong>7-day 0.5 mg/kg/day</strong> radical cure with food, alongside or following Chloroquine.",
         blood:(species === "pv" && stock === "in_stock") ? "Chloroquine" : "Artemether + Lumefantrine" };
 
-  /* Two dispensing pathways — always shown so the difference is visible,
-     highlighted when the user names their care setting. */
-  function pathways(){
-    const cls = who => setting === "both" ? "" : (setting === who ? " on" : " off");
-    const you = who => setting === who ? `<span class="lane-you">Your setting</span>` : "";
+  /* Two dispensing pathways. The user's own level is shown in full; the other
+     is collapsed but never removed — a CHW still needs to know what happens at
+     the facility they are referring to, and a wrong remembered role must stay
+     recoverable. With no role chosen, both are shown side by side. */
+  const QUOTE = `
+    <div class="protocol-quote">
+      “For Primaquine, the community health worker must refer the patient to the nearest health centre and keep following up on treatment.”
+      <span>National treatment protocol</span>
+    </div>`;
 
+  const LANE = {
+    facility: {
+      cls:"give", ico:ICON.hospital, level:"Facility level", where:"BHU / RHC",
+      action:"Dispense on site",
+      bullets:[
+        `Staffed by <strong>Medical Officers, LHVs and Medical Technicians</strong>; Primaquine is kept in stock and given directly to confirmed cases.`,
+        `<strong>Screen for contraindications</strong> — pregnancy, active lactation, and infants under 6 months.`,
+        `<strong>Counsel on acute haemolysis</strong> — dark or tea-coloured urine means stop and return immediately.`,
+        pq.facilityDose
+      ]
+    },
+    community: {
+      cls:"refer", ico:ICON.route, level:"Community level", where:"iCCM / frontline CHW",
+      action:"Refer — do not dispense",
+      bullets:[
+        `Dispense <strong>blood-stage treatment only</strong> (${pq.blood}) after confirming malaria by RDT.`,
+        `CHWs are <strong>strictly barred</strong> from giving Primaquine — no laboratory support or emergency response for <strong>G6PD-induced haemolytic crises</strong>.`,
+        `Issue an <strong>official referral slip</strong> to the tagged BHU or RHC for Primaquine initiation.`,
+        `<strong>Follow up at the patient's home</strong> to confirm the full course is completed and monitor for adverse reactions.`
+      ],
+      quote:true
+    }
+  };
+
+  function laneFull(L, active){
     return `
-      <div class="path-title">
-        ${ICON.route} Who dispenses Primaquine
-        <span class="hint">${setting === "both" ? "Depends on where the patient is seen" : "Highlighted for your selected setting"}</span>
-      </div>
-      <div class="pathways">
-
-        <div class="lane give${cls("facility")}">
-          ${you("facility")}
-          <div class="lane-head">
-            <div class="lane-ico">${ICON.hospital}</div>
-            <div class="lane-meta">
-              <div class="lane-level">Facility level</div>
-              <div class="lane-where">BHU / RHC</div>
-              <div class="lane-action">Dispense on site</div>
-            </div>
-          </div>
-          <ul>
-            <li>Staffed by <strong>Medical Officers, LHVs and Medical Technicians</strong>; Primaquine is kept in stock and given directly to confirmed cases.</li>
-            <li><strong>Screen for contraindications</strong> — pregnancy, active lactation, and infants under 6 months.</li>
-            <li><strong>Counsel on acute haemolysis</strong> — dark or tea-coloured urine means stop and return immediately.</li>
-            <li>${pq.facilityDose}</li>
-          </ul>
-        </div>
-
-        <div class="lane refer${cls("community")}">
-          ${you("community")}
-          <div class="lane-head">
-            <div class="lane-ico">${ICON.route}</div>
-            <div class="lane-meta">
-              <div class="lane-level">Community level</div>
-              <div class="lane-where">iCCM / frontline CHW</div>
-              <div class="lane-action">Refer — do not dispense</div>
-            </div>
-          </div>
-          <ul>
-            <li>Dispense <strong>blood-stage treatment only</strong> (${pq.blood}) after confirming malaria by RDT.</li>
-            <li>CHWs are <strong>strictly barred</strong> from giving Primaquine — no laboratory support or emergency response for <strong>G6PD-induced haemolytic crises</strong>.</li>
-            <li>Issue an <strong>official referral slip</strong> to the tagged BHU or RHC for Primaquine initiation.</li>
-            <li><strong>Follow up at the patient's home</strong> to confirm the full course is completed and monitor for adverse reactions.</li>
-          </ul>
-          <div class="protocol-quote">
-            “For Primaquine, the community health worker must refer the patient to the nearest health centre and keep following up on treatment.”
-            <span>National treatment protocol</span>
+      <div class="lane ${L.cls}${active ? " on" : ""}">
+        ${active ? `<span class="lane-you">Your setting</span>` : ""}
+        <div class="lane-head">
+          <div class="lane-ico">${L.ico}</div>
+          <div class="lane-meta">
+            <div class="lane-level">${L.level}</div>
+            <div class="lane-where">${L.where}</div>
+            <div class="lane-action">${L.action}</div>
           </div>
         </div>
-
+        <ul>${L.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
+        ${L.quote ? QUOTE : ""}
       </div>`;
+  }
+
+  function laneCollapsed(L){
+    return `
+      <details class="lane-alt">
+        <summary><span class="mini">${L.level}</span> ${L.where} — ${L.action}</summary>
+        <div class="lane-alt-body">
+          <ul>${L.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
+          ${L.quote ? QUOTE : ""}
+        </div>
+      </details>`;
+  }
+
+  function pathways(){
+    let body, hint;
+    if (ROLE === "facility"){
+      body = laneFull(LANE.facility, true) + laneCollapsed(LANE.community);
+      hint = "Your level in full · community level collapsed";
+    } else if (ROLE === "community"){
+      body = laneFull(LANE.community, true) + laneCollapsed(LANE.facility);
+      hint = "Your level in full · facility level collapsed";
+    } else {
+      body = `<div class="pathways">${laneFull(LANE.facility,false)}${laneFull(LANE.community,false)}</div>`;
+      hint = "Depends on where the patient is seen";
+    }
+    return `<div class="path-title">${ICON.route} Who dispenses Primaquine
+      <span class="hint">${hint}</span></div>${body}`;
+  }
+
+  /* Role-specific action plan — what *you* do, in order. */
+  function actionPlan(){
+    if (ROLE === "both"){
+      return `<div class="actions">
+        <div class="actions-title">${ICON.notes} Your action plan</div>
+        <div class="steps-prompt">
+          <span>Choose your care setting to get a step-by-step list written for your role.</span>
+          <button type="button" onclick="openRoleGate()">Choose setting</button>
+        </div>
+      </div>`;
+    }
+
+    const courseTxt = usesAL
+      ? "twice daily for 3 days (6 doses)"
+      : "once daily for 3 days, with food";
+    const why  = isPreg ? "pregnancy" : "lactation";
+    const s    = [];
+
+    if (ROLE === "facility"){
+      s.push(`Confirm the diagnosis by <strong>microscopy or RDT</strong>.`);
+      s.push(`Dispense the blood-stage course — <strong>${bDrug}</strong>, ${courseTxt}.`);
+      if (isPregLact){
+        s.push(`<strong>Screen for Primaquine contraindications</strong> — this patient screens positive for <strong>${why}</strong>.`);
+        s.push({ stop:true, t:`<strong>Do not dispense Primaquine.</strong> Record the deferred course in the patient's file.` });
+        s.push(`Schedule radical cure for when it is safe to give, and arrange follow-up.`);
+      } else {
+        s.push(`<strong>Screen for contraindications</strong> — pregnancy, active lactation, infant under 6 months. None apply here.`);
+        s.push(`Dispense Primaquine — ${species === "pf" ? "single 0.25 mg/kg dose on Day 1" : "7-day 0.5 mg/kg/day course with food"}.`);
+        s.push(`<strong>Counsel on haemolysis</strong> — dark or tea-coloured urine means stop and return immediately.`);
+        s.push(`Record the case and arrange follow-up.`);
+      }
+    } else {
+      s.push(`Confirm malaria by <strong>RDT</strong> before treating.`);
+      s.push(`Dispense the blood-stage course — <strong>${bDrug}</strong>, ${courseTxt}.`);
+      if (isPregLact){
+        s.push({ stop:true, t:`<strong>Do not give Primaquine</strong> — contraindicated in ${why}, and CHWs do not dispense it in any case.` });
+        s.push(`Refer to the tagged BHU or RHC so the deferred course can be recorded and scheduled.`);
+        s.push(`<strong>Follow up at the patient's home</strong> to confirm the blood-stage course is completed.`);
+      } else {
+        s.push({ stop:true, t:`<strong>Do not give Primaquine.</strong> Issue an <strong>official referral slip</strong> to the tagged BHU or RHC for Primaquine initiation.` });
+        s.push(`<strong>Follow up at the patient's home</strong> to confirm the full course is completed and watch for adverse reactions — especially <strong>dark or tea-coloured urine</strong>.`);
+      }
+    }
+
+    const items = s.map(x => typeof x === "string"
+      ? `<li>${x}</li>`
+      : `<li class="stop">${x.t}</li>`).join("");
+
+    return `<div class="actions">
+      <div class="actions-title">${ICON.notes} Your action plan
+        <span class="who">${ROLE_LABEL[ROLE]}</span>
+      </div>
+      <ol class="steps">${items}</ol>
+    </div>`;
   }
 
   let pqBlock = "";
@@ -966,8 +1240,7 @@ function runGuidelineEngine(){
     w ? `<span class="ctx">${fmt(w)} kg</span>` : "",
     `<span class="ctx${isPregLact ? " warn" : ""}">${STATUS_LABEL[status]}</span>`,
     stock === "out_stock" ? `<span class="ctx warn">CQ stockout</span>` : "",
-    setting === "facility"  ? `<span class="ctx">Facility · BHU / RHC</span>` : "",
-    setting === "community" ? `<span class="ctx">Community · iCCM / CHW</span>` : ""
+    ROLE !== "both" ? `<span class="ctx">${ROLE_LABEL[ROLE]}</span>` : ""
   ].join("");
 
   const bTagsHtml = bTags.map((t,i) =>
@@ -1012,6 +1285,8 @@ function runGuidelineEngine(){
 
         ${pqBlock}
 
+        ${actionPlan()}
+
         <div class="notes">
           <div class="notes-title">${ICON.notes} Clinical notes &amp; administration</div>
           <div class="note-box">${clinicalHtml}</div>
@@ -1020,7 +1295,7 @@ function runGuidelineEngine(){
     </div>`;
 }
 
-runGuidelineEngine();
+initRole();
 </script>
 </body>
 </html>
