@@ -340,6 +340,66 @@ input.ctl[type=number]{-moz-appearance:textfield;}
 .referral svg{width:16px;height:16px;flex:none;margin-top:2px;color:var(--ih-blue);}
 .referral b{display:block;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ih-blue);margin-bottom:4px;}
 
+/* ---------- Dispensing pathways (facility vs community) ----- */
+.path-title{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  margin-top:16px;margin-bottom:10px;
+  font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+}
+.path-title svg{width:14px;height:14px;color:var(--ih-blue);}
+.path-title .hint{
+  margin-left:auto;font-size:10.5px;font-weight:700;letter-spacing:.02em;
+  text-transform:none;color:var(--muted);
+}
+.pathways{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+@media (max-width:760px){ .pathways{grid-template-columns:1fr;} }
+
+.lane{
+  position:relative;background:#fff;
+  border:1.5px solid var(--line);border-radius:var(--r-md);
+  padding:13px 15px 14px;transition:opacity .15s, border-color .15s;
+}
+.lane.on.give{border-color:#B6DFC8;box-shadow:0 0 0 3px rgba(14,122,70,.09);}
+.lane.on.refer{border-color:#F0C4C6;box-shadow:0 0 0 3px rgba(220,31,38,.08);}
+.lane.off{opacity:.55;background:#FBFCFD;}
+
+.lane-head{display:flex;align-items:flex-start;gap:10px;}
+.lane-ico{
+  width:32px;height:32px;flex:none;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+}
+.lane-ico svg{width:17px;height:17px;}
+.give .lane-ico{background:var(--ok-tint);border:1px solid #C3E6D3;color:var(--ok);}
+.refer .lane-ico{background:var(--ih-red-tint);border:1px solid #F6D2D3;color:var(--ih-red);}
+.lane-meta{min-width:0;flex:1;}
+.lane-level{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.lane-where{font-size:12.5px;font-weight:700;color:var(--ink-2);margin-top:1px;}
+.lane-action{font-size:14.5px;font-weight:800;letter-spacing:-.01em;margin-top:5px;line-height:1.25;}
+.give .lane-action{color:var(--ok);}
+.refer .lane-action{color:var(--ih-red);}
+.lane-you{
+  position:absolute;top:11px;right:12px;
+  font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;border-radius:999px;
+}
+.give .lane-you{background:var(--ok-tint);color:var(--ok);border:1px solid #C3E6D3;}
+.refer .lane-you{background:var(--ih-red-tint);color:var(--danger);border:1px solid #F0C4C6;}
+
+.lane ul{margin:11px 0 0;padding-left:16px;font-size:12.3px;line-height:1.55;color:var(--ink-2);}
+.lane li{margin-bottom:6px;}
+.lane li:last-child{margin-bottom:0;}
+.lane li strong{color:var(--ink);font-weight:700;}
+
+.protocol-quote{
+  margin-top:11px;padding:9px 12px;
+  background:#F4F8FD;border-left:3px solid var(--ih-blue);border-radius:0 6px 6px 0;
+  font-size:11.8px;line-height:1.5;color:#1B3F76;font-style:italic;
+}
+.protocol-quote span{
+  display:block;font-style:normal;font-size:9.5px;font-weight:800;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ih-blue);margin-top:5px;
+}
+
 /* ---------- Clinical notes ---------------------------------- */
 .notes{margin-top:17px;padding-top:15px;border-top:1px solid var(--line-soft);}
 .notes-title{
@@ -514,6 +574,15 @@ input.ctl[type=number]{-moz-appearance:textfield;}
             <option value="lact">Lactating mother</option>
           </select>
         </div>
+
+        <div class="f">
+          <label for="setting-select">Care Setting</label>
+          <select id="setting-select" class="ctl" onchange="runGuidelineEngine()">
+            <option value="both" selected>Show both levels</option>
+            <option value="facility">Facility — BHU / RHC</option>
+            <option value="community">Community — iCCM / CHW</option>
+          </select>
+        </div>
       </div>
 
       <div class="mismatch" id="weight-mismatch">
@@ -648,6 +717,7 @@ function resetForm(){
   document.getElementById("age-select").value     = "g4";
   document.getElementById("stock-select").value   = "in_stock";
   document.getElementById("status-select").value  = "general";
+  document.getElementById("setting-select").value = "both";
   document.getElementById("weight-input").value   = "";
   runGuidelineEngine();
 }
@@ -763,13 +833,73 @@ function runGuidelineEngine(){
   }
 
   /* ---- Regimen 2: Primaquine ------------------------------- */
+  const setting = document.getElementById("setting-select").value;   // both | facility | community
+
   const pq = (species === "pf")
     ? { rate:0.25, when:"Day 1 only", duration:"Single dose on the first day of treatment",
         purpose:"Gametocytocidal — blocks onward transmission",
-        referral:"Refer patient to the nearest health centre for supervised single-dose Primaquine administration, and keep following up on treatment." }
+        facilityDose:"Give the single <strong>0.25 mg/kg</strong> gametocytocidal dose on Day 1, alongside ACT.",
+        blood:"Artemether + Lumefantrine" }
     : { rate:0.5,  when:"Days 1 – 7", duration:"One dose daily for 7 days, taken with food",
         purpose:"Radical cure — eradicates liver hypnozoites",
-        referral:"Refer patient to the nearest health facility for supervised 7-day radical cure to eradicate liver hypnozoites, and keep following up on treatment." };
+        facilityDose:"Dispense the <strong>7-day 0.5 mg/kg/day</strong> radical cure with food, alongside or following Chloroquine.",
+        blood:(species === "pv" && stock === "in_stock") ? "Chloroquine" : "Artemether + Lumefantrine" };
+
+  /* Two dispensing pathways — always shown so the difference is visible,
+     highlighted when the user names their care setting. */
+  function pathways(){
+    const cls = who => setting === "both" ? "" : (setting === who ? " on" : " off");
+    const you = who => setting === who ? `<span class="lane-you">Your setting</span>` : "";
+
+    return `
+      <div class="path-title">
+        ${ICON.route} Who dispenses Primaquine
+        <span class="hint">${setting === "both" ? "Depends on where the patient is seen" : "Highlighted for your selected setting"}</span>
+      </div>
+      <div class="pathways">
+
+        <div class="lane give${cls("facility")}">
+          ${you("facility")}
+          <div class="lane-head">
+            <div class="lane-ico">${ICON.hospital}</div>
+            <div class="lane-meta">
+              <div class="lane-level">Facility level</div>
+              <div class="lane-where">BHU / RHC</div>
+              <div class="lane-action">Dispense on site</div>
+            </div>
+          </div>
+          <ul>
+            <li>Staffed by <strong>Medical Officers, LHVs and Medical Technicians</strong>; Primaquine is kept in stock and given directly to confirmed cases.</li>
+            <li><strong>Screen for contraindications</strong> — pregnancy, active lactation, and infants under 6 months.</li>
+            <li><strong>Counsel on acute haemolysis</strong> — dark or tea-coloured urine means stop and return immediately.</li>
+            <li>${pq.facilityDose}</li>
+          </ul>
+        </div>
+
+        <div class="lane refer${cls("community")}">
+          ${you("community")}
+          <div class="lane-head">
+            <div class="lane-ico">${ICON.route}</div>
+            <div class="lane-meta">
+              <div class="lane-level">Community level</div>
+              <div class="lane-where">iCCM / frontline CHW</div>
+              <div class="lane-action">Refer — do not dispense</div>
+            </div>
+          </div>
+          <ul>
+            <li>Dispense <strong>blood-stage treatment only</strong> (${pq.blood}) after confirming malaria by RDT.</li>
+            <li>CHWs are <strong>strictly barred</strong> from giving Primaquine — no laboratory support or emergency response for <strong>G6PD-induced haemolytic crises</strong>.</li>
+            <li>Issue an <strong>official referral slip</strong> to the tagged BHU or RHC for Primaquine initiation.</li>
+            <li><strong>Follow up at the patient's home</strong> to confirm the full course is completed and monitor for adverse reactions.</li>
+          </ul>
+          <div class="protocol-quote">
+            “For Primaquine, the community health worker must refer the patient to the nearest health centre and keep following up on treatment.”
+            <span>National treatment protocol</span>
+          </div>
+        </div>
+
+      </div>`;
+  }
 
   let pqBlock = "";
   if (isPregLact){
@@ -792,7 +922,9 @@ function runGuidelineEngine(){
           `<strong>Do NOT administer Primaquine during ${why}.</strong> ${isPreg
             ? "Defer radical cure until after delivery and cessation of breastfeeding."
             : "Defer radical cure until breastfeeding has ceased."}`)}
-        ${referralNote(`Record the deferred Primaquine course in the patient's file and refer to the nearest health facility so radical cure can be scheduled once it is safe to give.`)}
+        ${alertBox("info","info",
+          `<strong>This contraindication is caught by facility-level screening.</strong> At BHU / RHC level, clinical staff verify pregnancy, active lactation and age under 6 months before dispensing. At community level the patient is referred regardless — CHWs do not dispense Primaquine.`, "mt")}
+        ${referralNote(`Record the deferred Primaquine course in the patient's file and refer to the tagged BHU or RHC so radical cure can be scheduled once it is safe to give.`)}
       </div>`;
   } else {
     const mg = w ? `${fmt(pq.rate * w)} mg` : null;
@@ -821,7 +953,9 @@ function runGuidelineEngine(){
             `<span style="text-transform:none;letter-spacing:0;font-weight:600;">${pq.purpose}</span>`
         )}
         ${species !== "pf" ? `<div class="total"><span class="total-key">Course length</span><span class="total-val">7 daily doses, taken with food</span></div>` : ""}
-        ${referralNote(pq.referral)}
+        ${pathways()}
+        ${alertBox("warn","alert",
+          `<strong>G6PD haemolysis watch — applies at both levels.</strong> Counsel every patient that <strong>dark or tea-coloured urine</strong> means stop Primaquine and return to the health facility immediately.`, "mt")}
       </div>`;
   }
 
@@ -831,7 +965,9 @@ function runGuidelineEngine(){
     `<span class="ctx">${AGE_LABEL[age]}</span>`,
     w ? `<span class="ctx">${fmt(w)} kg</span>` : "",
     `<span class="ctx${isPregLact ? " warn" : ""}">${STATUS_LABEL[status]}</span>`,
-    stock === "out_stock" ? `<span class="ctx warn">CQ stockout</span>` : ""
+    stock === "out_stock" ? `<span class="ctx warn">CQ stockout</span>` : "",
+    setting === "facility"  ? `<span class="ctx">Facility · BHU / RHC</span>` : "",
+    setting === "community" ? `<span class="ctx">Community · iCCM / CHW</span>` : ""
   ].join("");
 
   const bTagsHtml = bTags.map((t,i) =>
