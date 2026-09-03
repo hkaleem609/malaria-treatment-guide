@@ -142,11 +142,33 @@ Two schedule renderers exist — use the right one:
 
 ### Responsive behaviour
 
-- Breakpoint at **640px** → single column; the dosing timeline rotates from a horizontal
-  rail to a **vertical** one, and the page goes edge-to-edge
-- Touch targets are **46px minimum** on selects
-- Type scales with `clamp()`; nothing may overflow horizontally
-- `@media print` styles exist so the protocol prints cleanly as a patient record
+Breakpoints: **900px** (two-column grids collapse), **640px** (phone), **380px** (small
+phone). Type scales with `clamp()`; nothing may overflow horizontally.
+
+Non-obvious rules that exist for a reason — do not "tidy" these away:
+
+- **`.ctl` is `font-size:16px` on phones.** Below 16px, iOS Safari zooms the page when a
+  form control is focused and does not zoom back out. The desktop size is 13.5px; the
+  mobile bump is deliberate, not an inconsistency.
+- **Touch targets are 48px** on phones (controls, buttons, `<details>` summaries).
+- **Safe-area insets** (`env(safe-area-inset-*)`) on every full-bleed section, and on the
+  footer's bottom padding, so content clears notches and the home indicator.
+- **The dosing timeline becomes compact rows below 640px** — flex rows with the dose
+  right-aligned, connector rail dropped, rather than three tall centred cards. Print
+  restores the centred cards.
+
+### The sticky case bar
+
+`.stickybar` (mobile only) keeps the case summary visible through a long protocol and puts
+the form one tap away via `jumpToDetails()`. `.assess` carries `scroll-margin-top` so the
+bar does not cover the panel it scrolls to.
+
+`.rx-context` inside the Rx header is **hidden below 640px** to avoid duplicating it — and
+**forced back on in print** (`display:flex !important`), because the printed record must
+always carry the case summary. Both render from the same `ctxParts` array, which is built
+*before* the under-6-month early return so the bar stays correct on that screen too.
+
+`@media print` styles exist so the protocol prints cleanly as a patient record.
 
 ### Accessibility
 
