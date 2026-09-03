@@ -35,6 +35,7 @@ body{
   font-family:var(--font); color:var(--ink); line-height:1.5;
   padding:clamp(0px,2.5vw,26px);
   display:flex; justify-content:center;
+  -webkit-tap-highlight-color:rgba(29,74,158,.12);
 }
 .page{
   width:100%; max-width:1020px; background:var(--surface);
@@ -587,21 +588,115 @@ input.ctl[type=number]{-moz-appearance:textfield;}
 #protocol-output > *{animation:rise .2s ease-out;}
 @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
 
-/* ---------- Mobile ------------------------------------------ */
-@media (max-width:660px){
-  body{padding:0;}
-  .page{border-radius:0;border-left:none;border-right:none;}
-  .course{grid-template-columns:1fr;}
-  .day::before{top:auto;bottom:100%;right:auto;left:calc(50% - 1px);width:2px;height:12px;}
-  .assess-head .cue-text{margin-left:0;width:100%;order:3;}
-  .howto{gap:6px;}
-  .howto-step{font-size:11.5px;}
+/* ---------- Sticky context bar (mobile only) -----------------
+   The protocol is long on a phone. Once the details panel scrolls
+   away this keeps the case visible and one tap from being edited. */
+.stickybar{display:none;}
+.sb-chips{display:flex;gap:5px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+.sb-chips::-webkit-scrollbar{display:none;}
+.sb-chips span{
+  white-space:nowrap;font-size:11.5px;font-weight:700;color:var(--ink-2);
+  background:#F4F7FC;border:1px solid var(--line);padding:5px 10px;border-radius:999px;
 }
-@media (max-width:400px){
-  .assess-grid{grid-template-columns:1fr;}
+.sb-chips span.warn{background:var(--ih-red-tint);border-color:#F6D2D3;color:var(--danger);}
+.sb-edit{
+  flex:none;min-height:36px;padding:7px 14px;border-radius:999px;
+  background:var(--ih-blue);color:#fff;border:none;
+  font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;
+}
+.sb-edit:active{background:var(--ih-blue-dk);}
+
+/* ============================================================
+   MOBILE
+   · form controls at 16px — anything smaller makes iOS Safari zoom
+     the page on focus, leaving the user to pinch back out
+   · 48px minimum touch targets
+   · safe-area insets so full-bleed content clears notches
+   ============================================================ */
+@media (max-width:900px){
+  .pathways{grid-template-columns:1fr;}
+  .gate-opts{grid-template-columns:1fr;}
+}
+
+@media (max-width:640px){
+  body{padding:0;background-image:none;background:var(--bg);}
+  .page{border-radius:0;border-left:none;border-right:none;box-shadow:none;}
+
+  /* clear notches and rounded screen corners */
+  .brandbar,.titleband,.main,.foot,.gate{
+    padding-left:max(14px, env(safe-area-inset-left));
+    padding-right:max(14px, env(safe-area-inset-right));
+  }
+  .foot{padding-bottom:max(16px, env(safe-area-inset-bottom));}
+
+  /* --- form --- */
+  .assess{padding:12px 14px 14px;scroll-margin-top:58px;}
+  .assess-grid{grid-template-columns:1fr;gap:11px;}
+  .ctl{font-size:16px;min-height:48px;padding:11px 14px;}
+  select.ctl{padding-right:36px;background-position:right 13px center;}
+  .f label{font-size:11px;}
+  .assess-head .cue-text{margin-left:0;width:100%;order:3;font-size:12px;}
+
+  /* --- sticky context bar --- */
+  .stickybar{
+    display:flex;align-items:center;gap:9px;
+    position:sticky;top:0;z-index:30;
+    margin:0 calc(-1 * max(14px, env(safe-area-inset-left))) 13px;
+    padding:9px max(14px, env(safe-area-inset-right)) 9px max(14px, env(safe-area-inset-left));
+    background:rgba(255,255,255,.95);
+    -webkit-backdrop-filter:saturate(170%) blur(9px);
+    backdrop-filter:saturate(170%) blur(9px);
+    border-bottom:1px solid var(--line);
+  }
+  .rx-context{display:none;}   /* the sticky bar carries this on mobile */
+
+  /* --- orientation strip --- */
+  .howto{gap:6px;}
+  .howto-step{font-size:11.5px;padding:4px 10px 4px 5px;}
+
+  /* --- dosing timeline becomes compact rows --- */
+  .course{grid-template-columns:1fr;gap:9px;}
+  .day{display:flex;flex-wrap:wrap;align-items:center;gap:0 11px;text-align:left;padding:11px 13px;}
+  .day::before{display:none;}
+  .day-num{margin:0;box-shadow:none;}
+  .day-label{margin:0;}
+  .day-dose{margin-left:auto;font-size:16.5px;}
+  .day-note{width:100%;text-align:right;margin-top:3px;}
+
+  /* --- stacked figures --- */
+  .dose-block{gap:9px;}
+  .dose-figure{margin-left:0;text-align:left;width:100%;}
+  .total-val{margin-left:0;text-align:left;width:100%;}
+
+  /* --- legibility in field conditions --- */
+  .lane ul,.lane-alt-body ul{font-size:13px;}
+  .steps li{font-size:13.4px;}
+  .alert{font-size:13.4px;}
+  .note-box{font-size:13.3px;}
+  .io-body{font-size:13px;}
+  .protocol-quote{font-size:12.5px;}
+  .emerg-fact{font-size:14px;}
+
+  /* --- tap targets --- */
+  .lane-alt summary{min-height:48px;padding:13px 14px;}
+  .btn{width:100%;justify-content:center;min-height:48px;font-size:14px;}
+  .toolbar{gap:8px;}
+  .gate-card{padding:16px;}
+  .gate-skip{min-height:44px;}
+  .steps-prompt button{margin-left:0;width:100%;min-height:44px;}
+
   .drug{gap:11px;}
-  .drug-icon{width:36px;height:36px;border-radius:9px;}
-  .drug-icon svg{width:18px;height:18px;}
+  .drug-icon{width:38px;height:38px;border-radius:9px;}
+  .drug-icon svg{width:19px;height:19px;}
+}
+
+@media (max-width:380px){
+  .rolechip em{display:none;}
+  .lk-word{font-size:11.5px;}
+  /* keep the orientation steps, scroll them rather than stacking 3 rows */
+  .howto{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;}
+  .howto::-webkit-scrollbar{display:none;}
+  .howto-step{flex:none;}
 }
 
 /* ---------- Print ------------------------------------------- */
@@ -612,8 +707,13 @@ input.ctl[type=number]{-moz-appearance:textfield;}
     -webkit-print-color-adjust:exact;print-color-adjust:exact;
   }
   .main{background:#fff;padding:12px 0;}
-  .toolbar,.howto,.assess-head .cue-text,.gate,.rolechip em{display:none !important;}
+  .toolbar,.howto,.assess-head .cue-text,.gate,.rolechip em,.stickybar{display:none !important;}
   .lane-alt[open] .lane-alt-body{display:block;}
+  /* the case summary is hidden on small screens in favour of the sticky bar —
+     the printed record must always carry it */
+  .rx-context{display:flex !important;}
+  .day{display:block !important;text-align:center !important;}
+  .day-dose{font-size:15px !important;}
   .assess{box-shadow:none;}
   .course{grid-template-columns:repeat(3,1fr);}
   .rx,.emerg,.assess,.reg{break-inside:avoid;}
@@ -755,6 +855,11 @@ input.ctl[type=number]{-moz-appearance:textfield;}
     </section>
 
     <!-- ============ STEP 2 — the treatment ============ -->
+    <div class="stickybar">
+      <div class="sb-chips" id="sb-chips"></div>
+      <button type="button" class="sb-edit" onclick="jumpToDetails()">Edit</button>
+    </div>
+
     <div id="protocol-output" aria-live="polite"></div>
 
     <div class="toolbar">
@@ -920,6 +1025,11 @@ function openRoleGate(){
   showGate(true);
   window.scrollTo(0, 0);
 }
+function jumpToDetails(){
+  const el = document.getElementById("assess");
+  try { el.scrollIntoView({ behavior:"smooth", block:"start" }); }
+  catch(e){ el.scrollIntoView(); }
+}
 function initRole(){
   let saved = null;
   try { saved = localStorage.getItem(ROLE_KEY); } catch(e){ /* ignore */ }
@@ -950,6 +1060,25 @@ function runGuidelineEngine(){
   document.getElementById("assess").classList.remove("cue");
   checkWeight(age, w);
 
+  const isPreg     = status === "preg";
+  const isLact     = status === "lact";
+  const isPregLact = isPreg || isLact;
+
+  /* Case summary, rendered twice: inside the Rx header (kept for print)
+     and in the mobile sticky bar. Built before the early return so the
+     sticky bar stays correct on the emergency-referral screen too. */
+  const ctxParts = [
+    { t: SPECIES_LABEL[species] },
+    { t: AGE_LABEL[age] },
+    ...(w ? [{ t: `${fmt(w)} kg` }] : []),
+    { t: STATUS_LABEL[status], warn: isPregLact },
+    ...(stock === "out_stock" ? [{ t: "CQ stockout", warn: true }] : []),
+    ...(ROLE !== "both" ? [{ t: ROLE_LABEL[ROLE] }] : [])
+  ];
+  const ctx = ctxParts.map(p => `<span class="ctx${p.warn ? " warn" : ""}">${p.t}</span>`).join("");
+  document.getElementById("sb-chips").innerHTML =
+    ctxParts.map(p => `<span${p.warn ? ` class="warn"` : ""}>${p.t}</span>`).join("");
+
   /* ---- Infants < 6 months: emergency referral -------------- */
   if (age === "u6m"){
     out.innerHTML = `
@@ -976,10 +1105,7 @@ function runGuidelineEngine(){
     return;
   }
 
-  const al         = AL_DOSING[age];
-  const isPreg     = status === "preg";
-  const isLact     = status === "lact";
-  const isPregLact = isPreg || isLact;
+  const al = AL_DOSING[age];
 
   /* ---- Regimen 1: blood-stage ------------------------------ */
   let title = "", badge = "", topAlert = "";
@@ -1286,16 +1412,6 @@ function runGuidelineEngine(){
         </div>`;
     }
   }
-
-  /* ---- Context chips --------------------------------------- */
-  const ctx = [
-    `<span class="ctx">${SPECIES_LABEL[species]}</span>`,
-    `<span class="ctx">${AGE_LABEL[age]}</span>`,
-    w ? `<span class="ctx">${fmt(w)} kg</span>` : "",
-    `<span class="ctx${isPregLact ? " warn" : ""}">${STATUS_LABEL[status]}</span>`,
-    stock === "out_stock" ? `<span class="ctx warn">CQ stockout</span>` : "",
-    ROLE !== "both" ? `<span class="ctx">${ROLE_LABEL[ROLE]}</span>` : ""
-  ].join("");
 
   const bTagsHtml = bTags.map((t,i) =>
     `<span class="pill-tag${i === 0 ? "" : " neutral"}">${t}</span>`).join("");
