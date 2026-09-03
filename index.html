@@ -337,30 +337,23 @@ input.ctl[type=number]{-moz-appearance:textfield;}
 }
 .day-note{margin-top:4px;font-size:11px;color:var(--muted);line-height:1.35;}
 
-/* ---------- Single / repeated dose block -------------------- */
-.dose-block{
-  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  background:linear-gradient(180deg,#FFF 0%, #FBFCFE 100%);
-  border:1.5px solid var(--line);border-radius:var(--r-md);
-  padding:14px 16px;
+/* schedule label above a timeline */
+.sched-label{
+  display:flex;align-items:center;gap:8px;
+  font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:9px;
 }
-.dose-when{
-  display:flex;align-items:center;gap:9px;
-  font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
-}
-.dose-when .marker{
-  padding:4px 10px;border-radius:999px;background:var(--ih-blue);color:#fff;
-  font-size:11px;font-weight:800;letter-spacing:.04em;
-}
-.dose-figure{margin-left:auto;text-align:right;}
-.dose-figure .amt{
-  font-size:clamp(17px,3.4vw,23px);font-weight:800;letter-spacing:-.02em;
-  color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.15;
-}
-.dose-figure .sub{font-size:11.5px;color:var(--muted);margin-top:3px;}
-@media (max-width:520px){
-  .dose-figure{margin-left:0;text-align:left;width:100%;}
-}
+.sched-label::after{content:"";flex:1;height:1px;background:var(--line-soft);}
+
+/* week variant — 7 days must fit one row, so the cards get tighter */
+.course.week{grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:9px;}
+.course.week .day{padding:10px 8px 9px;}
+.course.week .day::before{width:9px;}
+.course.week .day-num{width:24px;height:24px;font-size:11.5px;margin-bottom:6px;}
+.course.week .day-label{font-size:9.5px;letter-spacing:.07em;}
+.course.week .day-dose{font-size:clamp(13px,2.4vw,15px);}
+/* single-dose variant — one card must not stretch the full width */
+.course.week.short{grid-template-columns:repeat(auto-fit,minmax(122px,168px));justify-content:start;}
 
 /* ---------- Total strip ------------------------------------- */
 .total{
@@ -663,9 +656,16 @@ input.ctl[type=number]{-moz-appearance:textfield;}
   .day-dose{margin-left:auto;font-size:16.5px;}
   .day-note{width:100%;text-align:right;margin-top:3px;}
 
+  /* a 7-day course as 7 full-width rows is too much scrolling —
+     keep it a compact multi-column grid of small day chips */
+  .course.week{grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:8px;}
+  .course.week .day{display:block;text-align:center;padding:9px 6px;}
+  .course.week .day-num{margin:0 auto 6px;}
+  .course.week .day-dose{margin-left:0;font-size:13.5px;}
+  .course.week .day-note{width:auto;text-align:center;margin-top:2px;}
+  .course.week.short{grid-template-columns:repeat(auto-fit,minmax(112px,150px));}
+
   /* --- stacked figures --- */
-  .dose-block{gap:9px;}
-  .dose-figure{margin-left:0;text-align:left;width:100%;}
   .total-val{margin-left:0;text-align:left;width:100%;}
 
   /* --- legibility in field conditions --- */
@@ -703,7 +703,7 @@ input.ctl[type=number]{-moz-appearance:textfield;}
 @media print{
   body{background:#fff;padding:0;}
   .page{box-shadow:none;border:none;max-width:100%;border-radius:0;}
-  .titleband,.rx-head,.emerg-head,.day-num,.assess-head .n,.dose-when .marker{
+  .titleband,.rx-head,.emerg-head,.day-num,.assess-head .n{
     -webkit-print-color-adjust:exact;print-color-adjust:exact;
   }
   .main{background:#fff;padding:12px 0;}
@@ -946,12 +946,6 @@ function dayCard(n, dose, note){
     <div class="day-dose">${dose}</div>
     ${note ? `<div class="day-note">${note}</div>` : ""}
   </li>`;
-}
-function doseBlock(when, amount, sub, footnote){
-  return `<div class="dose-block">
-    <div class="dose-when"><span class="marker">${when}</span>${footnote || ""}</div>
-    <div class="dose-figure"><div class="amt">${amount}</div>${sub ? `<div class="sub">${sub}</div>` : ""}</div>
-  </div>`;
 }
 function cqRow(w){
   if (!w || w < 11) return null;
@@ -1351,6 +1345,18 @@ function runGuidelineEngine(){
   } else {
     const mg = w ? `${fmt(pq.rate * w)} mg` : null;
 
+    /* Primaquine broken out day by day, matching the blood-stage timeline:
+       one card for falciparum's single Day 1 dose, seven for the radical cure. */
+    function pqCourse(){
+      const perDose = mg || `${pq.rate} mg/kg`;
+      if (species === "pf"){
+        return `<ol class="course week short">${dayCard(1, perDose, "Single dose")}</ol>`;
+      }
+      let cards = "";
+      for (let d = 1; d <= 7; d++) cards += dayCard(d, perDose, "");
+      return `<ol class="course week">${cards}</ol>`;
+    }
+
     const g6pd = ROLE === "community"
       ? alertBox("warn","alert",
           `<strong>G6PD haemolysis watch — your job during home follow-up.</strong> Tell the patient that <strong>dark or tea-coloured urine</strong> means stop Primaquine and return to the health facility immediately.`, "mt")
@@ -1399,14 +1405,16 @@ function runGuidelineEngine(){
               </div>
             </div>
           </div>
-          ${doseBlock(
-              pq.when,
-              mg ? mg : `${pq.rate} mg/kg`,
-              mg ? `${pq.rate} mg/kg × ${fmt(w)} kg${species === "pf" ? "" : " · each day"}`
-                 : "Enter body weight above to calculate the exact dose",
-              `<span style="text-transform:none;letter-spacing:0;font-weight:600;">${pq.purpose}</span>`
-          )}
-          ${species !== "pf" ? `<div class="total"><span class="total-key">Course length</span><span class="total-val">7 daily doses, taken with food</span></div>` : ""}
+          <div class="sched-label">${species === "pf"
+            ? "Single-dose schedule · given alongside ACT"
+            : "7-day radical cure schedule · one dose daily with food"}</div>
+          ${pqCourse()}
+          <div class="total">
+            <span class="total-key">${species === "pf" ? "Total dose" : "Course length"}</span>
+            <span class="total-val">${species === "pf"
+              ? `Single dose on Day 1${mg ? ` — ${mg}` : ` — ${pq.rate} mg/kg`}`
+              : `7 daily doses${mg ? ` of ${mg}` : ` of ${pq.rate} mg/kg`}, taken with food`}</span>
+          </div>
           ${pathways()}
           ${g6pd}
         </div>`;
