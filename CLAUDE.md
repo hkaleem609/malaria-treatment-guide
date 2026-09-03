@@ -206,11 +206,38 @@ Rendered as a full first-line regimen, not a footnote. Dose by species:
 -through "Contraindicated" state. The block still renders rather than disappearing, so the
 clinician can see Primaquine was considered and deferred.
 
-Every Primaquine state carries a **referral note** (`referralNote()`, the dashed blue
-panel). The protocol requires the community health worker to refer to the nearest health
-centre and follow up; the wording is specific to each case — 7-day supervised radical cure
-for vivax/mixed, supervised single dose for falciparum, deferred-and-scheduled when
-contraindicated.
+### Dispensing pathways — the load-bearing distinction
+
+**Who may dispense Primaquine depends on the care setting**, and this is the single most
+safety-critical thing on the page:
+
+| Level | Who | Action |
+|---|---|---|
+| **Facility** — BHU / RHC | Medical Officers, LHVs, Medical Technicians | **Dispense on site.** Stock held; staff screen contraindications and counsel on haemolysis |
+| **Community** — iCCM / frontline CHW | Community health workers | **Refer — do not dispense.** Blood-stage treatment only, then referral slip + home follow-up |
+
+CHWs are barred from dispensing because they lack laboratory support and emergency
+response for **G6PD-induced haemolytic crises**. That rationale is printed in the
+community lane on purpose — staff who understand *why* comply more reliably than staff
+told only *what*.
+
+`pathways()` renders both lanes side by side (stacking below 760px) so **every user sees
+the difference regardless of their own setting**. The Care Setting select highlights the
+active lane (`.lane.on`) and dims the other (`.lane.off`).
+
+**The default is `both`, deliberately.** Neither setting is a safe default: defaulting to
+facility could lead a CHW to dispense Primaquine without G6PD backup; defaulting to
+community would send facility staff to refer patients they could treat. Showing both and
+letting the user opt in avoids choosing a wrong default. **Do not "simplify" this to a
+pre-selected setting.**
+
+The exact national-protocol sentence is quoted in the community lane
+(`.protocol-quote`) — keep it verbatim, it is the authority for the referral requirement.
+
+A **G6PD haemolysis warning** (dark or tea-coloured urine → stop and return) sits below
+the lanes because it applies at both levels. Contraindicated cases skip the lanes and
+instead explain that facility screening is what catches pregnancy, lactation and age
+under 6 months, then use `referralNote()` for the deferred course.
 
 ### Dosing tables
 
