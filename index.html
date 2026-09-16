@@ -665,9 +665,15 @@ input.ctl[type=number]{-moz-appearance:textfield;}
   }
   .rx-context{display:none;}   /* the sticky bar carries this on mobile */
 
-  /* --- orientation strip --- */
-  .howto{gap:6px;}
-  .howto-step{font-size:11.5px;padding:4px 10px 4px 5px;}
+  /* --- declutter: the phone is the CHW's device and the dose is what they
+         came for, so orientation chrome is dropped here. The role gate and
+         the form itself already say what to do; these only pushed the
+         treatment further down the scroll. Desktop and print keep them. --- */
+  .titleband .lede,
+  .howto,
+  .assess-head .cue-text,
+  .rolechip em{display:none;}
+  .titleband{padding-top:14px;padding-bottom:14px;}
 
   /* --- dosing timeline becomes compact rows --- */
   .course{grid-template-columns:1fr;gap:9px;}
@@ -969,7 +975,7 @@ html[lang="ur"] .reg-kicker{font-size:13px;}
                  data-i18n-ph="phWeight" placeholder="e.g. 60" oninput="runGuidelineEngine()">
         </div>
 
-        <div class="f">
+        <div class="f" id="f-stock">
           <label for="stock-select" data-i18n="lblStock">Chloroquine Stock</label>
           <select id="stock-select" class="ctl" onchange="runGuidelineEngine()">
             <option value="in_stock" data-i18n="optInStock" selected>Available</option>
@@ -1225,6 +1231,8 @@ en:{
   badgeFirstLine:"First-line regimen",
   badgeContra:"Contraindicated",
   badgeReferNo:"Refer — do not dispense",
+  referDirective:`<strong>Do not give Primaquine.</strong> Write an official referral slip to the tagged BHU or RHC, then follow up at the patient's home.`,
+  moreDetail:"Why — and what the health centre will do",
   fNotDuring:why=>`Not to be given during ${why}`,
   fPqContra:(why,isPreg)=>`<strong>Do NOT administer Primaquine during ${why}.</strong> ${isPreg
       ? "Defer radical cure until after delivery and cessation of breastfeeding."
@@ -1394,6 +1402,8 @@ ur:{
   badgeFirstLine:"پہلی دوا",
   badgeContra:"یہ دوا منع ہے",
   badgeReferNo:"ہیلتھ سینٹر بھیجیں — دوا نہ دیں",
+  referDirective:`<strong>پرائماکوئن نہ دیں۔</strong> مریض کو قریبی BHU یا RHC کے لیے ریفرل سلپ لکھ کر دیں، پھر اس کے گھر جا کر دیکھیں۔`,
+  moreDetail:"وجہ — اور ہیلتھ سینٹر پر کیا ہوگا",
   fNotDuring:why=>`${why} میں یہ دوا نہیں دی جاتی`,
   fPqContra:(why,isPreg)=>`<strong>${why} میں پرائماکوئن ہرگز نہ دیں۔</strong> ${isPreg
       ? "یہ دوا بچے کی پیدائش اور دودھ پلانا ختم ہونے کے بعد دی جائے گی۔"
@@ -1584,6 +1594,11 @@ function runGuidelineEngine(){
   document.getElementById("assess").classList.remove("cue");
   checkWeight(age, w);
 
+  /* Chloroquine stock only changes the P. vivax branch — falciparum and mixed
+     get AL either way. Hiding it elsewhere removes a control the user would
+     otherwise have to read and decide about for no effect on the protocol. */
+  document.getElementById("f-stock").hidden = (species !== "pv");
+
   const isPreg     = status === "preg";
   const isLact     = status === "lact";
   const isPregLact = isPreg || isLact;
@@ -1596,7 +1611,7 @@ function runGuidelineEngine(){
     { t: t("age")[age] },
     ...(w ? [{ t: `${fmt(w)} kg` }] : []),
     { t: t("status")[status], warn: isPregLact },
-    ...(stock === "out_stock" ? [{ t: t("ctxStockout"), warn: true }] : []),
+    ...(species === "pv" && stock === "out_stock" ? [{ t: t("ctxStockout"), warn: true }] : []),
     ...(ROLE !== "both" ? [{ t: roleLabel(ROLE) }] : [])
   ];
   const ctx = ctxParts.map(p => `<span class="ctx${p.warn ? " warn" : ""}">${p.t}</span>`).join("");
@@ -1745,10 +1760,10 @@ function runGuidelineEngine(){
       </div>`;
   }
 
-  function laneCollapsed(L){
+  function laneCollapsed(L, summaryOverride){
     return `
       <details class="lane-alt">
-        <summary><span class="mini">${L.level}</span> ${L.where} — ${L.action}</summary>
+        <summary><span class="mini">${L.level}</span> ${summaryOverride || `${L.where} — ${L.action}`}</summary>
         <div class="lane-alt-body">
           <ul>${L.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
           ${L.quote ? QUOTE : ""}
@@ -1867,7 +1882,12 @@ function runGuidelineEngine(){
 
     if (ROLE === "community"){
       /* CHWs never hand Primaquine over, so the referral is the instruction and
-         the dose is only reference for explaining what the facility will do. */
+         the dose is only reference for explaining what the facility will do.
+         On a phone the old layout said "refer, do not dispense" three times —
+         a four-bullet lane card, then the action plan, then the badge. The
+         directive is now stated once, up front and in red; the rationale and
+         the facility's side are one tap away rather than deleted, because a
+         CHW writing a referral slip still needs them. */
       pqBlock = `
         <div class="reg">
           <div class="reg-head">
@@ -1875,7 +1895,7 @@ function runGuidelineEngine(){
             <span class="reg-kicker">${t("regPQ")}</span>
             <span class="reg-tagpos"><span class="badge badge-stop">${t("badgeReferNo")}</span></span>
           </div>
-          ${laneFull(LANE.community, true)}
+          ${alertBox("danger","ban", t("referDirective"))}
           <div class="info-only">
             <div class="io-label">${t("ioLabel")}</div>
             <div class="io-body">
@@ -1884,8 +1904,9 @@ function runGuidelineEngine(){
               <br>${t("ioTail")}
             </div>
           </div>
-          ${laneCollapsed(LANE.facility)}
           ${g6pd}
+          ${laneCollapsed(LANE.community, t("moreDetail"))}
+          ${laneCollapsed(LANE.facility)}
         </div>`;
     } else {
       pqBlock = `
@@ -1919,8 +1940,9 @@ function runGuidelineEngine(){
     }
   }
 
-  const bTagsHtml = bTags.map((t,i) =>
-    `<span class="pill-tag${i === 0 ? "" : " neutral"}">${t}</span>`).join("");
+  /* param must not be named `t` — it would shadow the translation helper */
+  const bTagsHtml = bTags.map((tag,i) =>
+    `<span class="pill-tag${i === 0 ? "" : " neutral"}">${tag}</span>`).join("");
 
   /* ---- Render ---------------------------------------------- */
   out.innerHTML = `

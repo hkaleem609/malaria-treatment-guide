@@ -160,6 +160,19 @@ Non-obvious rules that exist for a reason — do not "tidy" these away:
 - **The dosing timeline becomes compact rows below 640px** — flex rows with the dose
   right-aligned, connector rail dropped, rather than three tall centred cards. Print
   restores the centred cards.
+- **Below 640px the orientation chrome is dropped** — `.lede`, `.howto`, the
+  `.cue-text` hint and the `Change` sublabel on the role chip are all `display:none`.
+  The phone is the CHW's device and the dose is what they opened the page for; these
+  only pushed the treatment further down the scroll. Desktop and print keep them, so
+  do not "restore consistency" by deleting the mobile rule.
+
+### The Chloroquine Stock control is conditional
+
+`#f-stock` is hidden whenever species is not `pv` — falciparum and mixed get AL whatever
+the stock says, so the control would be a decision with no effect on the protocol. The
+stockout **context chip** is gated on `species === "pv"` too, otherwise a stale
+`out_stock` value left over from a previous case would put a false "CQ stockout" chip on
+a falciparum record.
 
 ### The sticky case bar
 
@@ -330,14 +343,23 @@ stacking below 760px.
 A CHW never hands Primaquine over, so rendering it as a large first-line drug hero
 invited the wrong action. At `ROLE === "community"` regimen ② is restructured:
 
-1. **The refer card comes first** — `laneFull(LANE.community, true)`, with a red
+1. **The directive comes first** — a red `alertBox` carrying `referDirective`, under a
    `Refer — do not dispense` badge in the section head instead of the green
    `First-line regimen` badge
 2. **The dose drops to `.info-only`** — a small red strip labelled *"For information
    only — dispensed at the facility, not by you"*, framed as what the facility will give
    so the CHW can brief the patient. **Do not restore the drug hero here** — its size is
    the whole point.
-3. Facility lane collapsed below, then the G6PD warning
+3. G6PD warning, then **both lanes collapsed** — the community lane under the
+   `moreDetail` summary ("Why — and what the health centre will do"), the facility lane
+   under its own.
+
+**Why the community lane is collapsed rather than a full card:** on a phone the previous
+layout stated "refer, do not dispense" three times over — a four-bullet lane card, the
+badge, and again in the action plan. The directive is now stated once, in red, at the top
+of the block. The rationale is *not deleted* — a CHW writing a referral slip still needs
+it, so it is one tap away. `laneCollapsed()` takes an optional second argument to
+override the summary text for this.
 
 The G6PD text is also role-aware: at community level it is framed as a **home follow-up
 duty**, at facility level as dispensing-time counselling.
