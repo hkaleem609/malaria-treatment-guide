@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- No action bar: the page draws its own letterhead, and a second
+         title bar would just steal vertical space on a phone. -->
+    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#13306B</item>
+        <item name="android:windowBackground">#EBEFF5</item>
+    </style>
+</resources>

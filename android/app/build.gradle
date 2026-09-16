@@ -1,0 +1,84 @@
+plugins {
+    id "com.android.application"
+}
+
+/*
+ * Signing comes from the environment so the keystore never lives in the repo.
+ *
+ * With the four ANDROID_KEYSTORE_* variables set (CI reads them from GitHub
+ * secrets), release builds are signed with the programme's own key. Without
+ * them the build still succeeds and falls back to the debug key, so anyone can
+ * clone this and produce an installable APK for testing.
+ *
+ * A debug-signed APK is fine to try on a handset, but do NOT distribute one to
+ * the field: it is marked debuggable, and it cannot be upgraded later by an
+ * APK signed with the real key.
+ */
+def ksPath = System.getenv("ANDROID_KEYSTORE_PATH")
+def hasKeystore = ksPath != null && !ksPath.isEmpty() && file(ksPath).exists()
+
+android {
+    namespace "pk.org.indushospital.malariaguide"
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "pk.org.indushospital.malariaguide"
+
+        // Android 6.0. Covers the low-cost handsets CHWs actually carry;
+        // raising this would strand devices still in the field.
+        minSdk 23
+        targetSdk 34
+
+        // Both injected by CI: versionName from APP_VERSION in index.html so
+        // the launcher and the page's footer can never disagree, versionCode
+        // from the build number so every build is upgradeable.
+        versionCode (System.getenv("ANDROID_VERSION_CODE") ?: "1") as Integer
+        versionName System.getenv("ANDROID_VERSION_NAME") ?: "0.0.0-dev"
+    }
+
+    if (hasKeystore) {
+        signingConfigs {
+            release {
+                storeFile file(ksPath)
+                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            // Nothing to strip: no libraries, one activity. Shrinking would
+            // only add a way for the build to break.
+            minifyEnabled false
+            shrinkResources false
+            signingConfig hasKeystore ? signingConfigs.release : signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    // The APK must carry the guide. CI copies index.html and friends into
+    // src/main/assets before building; this fails the build loudly if that
+    // step was skipped, rather than shipping an APK that opens to a blank
+    // screen in the field.
+    tasks.register("verifyAssets") {
+        doLast {
+            def f = file("src/main/assets/index.html")
+            if (!f.exists() || f.length() < 10000) {
+                throw new GradleException(
+                    "src/main/assets/index.html is missing or truncated — the APK would " +
+                    "install and open to nothing. Copy the site into assets/ before building.")
+            }
+        }
+    }
+    tasks.configureEach { t ->
+        if (t.name.startsWith("merge") && t.name.endsWith("Assets")) {
+            t.dependsOn "verifyAssets"
+        }
+    }
+}

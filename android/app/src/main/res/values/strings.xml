@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shown under the launcher icon. Keep it short: long names are
+         truncated on the home screen. -->
+    <string name="app_name">Malaria Guide</string>
+</resources>

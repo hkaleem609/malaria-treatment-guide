@@ -1,0 +1,10 @@
+# Gradle / Android build output
+build/
+.gradle/
+local.properties
+*.jks
+*.keystore
+
+# The site is copied in by CI at build time from the repo root — it is not a
+# second copy to keep in sync by hand. See .github/workflows/android.yml.
+app/src/main/assets/
