@@ -6,6 +6,9 @@ The APK is a thin WebView wrapper around the same `index.html` that runs the web
 whole guide is bundled inside the app, so it works with **no internet, ever**. The app
 requests **no permissions at all** — no internet, no storage, no location.
 
+It is about **70 KB**, which matters when you are sending it over WhatsApp on a weak
+connection to a phone with little free storage.
+
 ---
 
 ## Read this before distributing
@@ -50,6 +53,47 @@ builds the APK.
 
 To build without tagging — to test something — open **Actions → Build Android APK → Run
 workflow**. The APK appears as a downloadable artifact on the run.
+
+### Building on this machine
+
+The toolchain is already installed at `D:\Automation\.buildtools` (JDK 17, Android SDK
+platform 34 + build-tools 34.0.0, Gradle 8.7 — about 1.3 GB). Nothing is on the system
+PATH and nothing needed admin rights, so each shell sets its own environment:
+
+```powershell
+$T = "D:\Automation\.buildtools"
+$env:JAVA_HOME         = (Get-ChildItem "$T\jdk" -Directory | Select-Object -First 1).FullName
+$env:ANDROID_HOME      = "$T\android-sdk"
+$env:ANDROID_SDK_ROOT  = $env:ANDROID_HOME
+$env:ANDROID_VERSION_NAME = "1.0.0"   # must match APP_VERSION in index.html
+$env:ANDROID_VERSION_CODE = "1"       # must increase on every build you distribute
+
+# the APK must carry the site — the build refuses to proceed without this
+Copy-Item ..\index.html,..\manifest.json,..\icon-192.png,..\icon-512.png `
+          .\app\src\main\assets\ -Force
+
+& "$T\gradle\gradle-8.7\bin\gradle.bat" --no-daemon assembleRelease
+```
+
+Output: `app/build/outputs/apk/release/app-release.apk`.
+
+`local.properties` (already present, and gitignored) points Gradle at the SDK.
+
+Inspect what you built:
+
+```powershell
+$B = "D:\Automation\.buildtools\android-sdk\build-tools\34.0.0"
+& "$B\aapt2.exe" dump badging app\build\outputs\apk\release\app-release.apk
+& "$B\apksigner.bat" verify --print-certs -v app\build\outputs\apk\release\app-release.apk
+```
+
+Check the signer line. `CN=Android Debug` means no release keystore was configured — see
+below, and do not distribute that build.
+
+**The APK is about 70 KB.** There are no libraries in it: one activity, no AndroidX, no
+Kotlin runtime, and the guide itself compresses from 107 KB to ~28 KB. If a build ever
+comes out at tens of megabytes, something has pulled in a dependency tree that does not
+belong here.
 
 ### Versioning
 

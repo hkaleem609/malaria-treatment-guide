@@ -17,6 +17,22 @@ plugins {
 def ksPath = System.getenv("ANDROID_KEYSTORE_PATH")
 def hasKeystore = ksPath != null && !ksPath.isEmpty() && file(ksPath).exists()
 
+/*
+ * Resolved here rather than inline in defaultConfig. Written inline as
+ *   versionCode (System.getenv("...") ?: "1") as Integer
+ * Groovy parses it as (versionCode(...)) as Integer — the cast lands on the
+ * setter's return value, not the argument — and the build dies with the
+ * wonderfully unhelpful "Value is null".
+ *
+ * versionCode: monotonic, from the CI build number. Android refuses to install
+ *   an APK whose versionCode is not greater than the installed one, so this is
+ *   what makes an update actually replace an old copy on a worker's phone.
+ * versionName: the human string, read from APP_VERSION in index.html so the
+ *   launcher and the page's own footer stamp cannot disagree.
+ */
+def vCode = (System.getenv("ANDROID_VERSION_CODE") ?: "1").toInteger()
+def vName = System.getenv("ANDROID_VERSION_NAME") ?: "0.0.0-dev"
+
 android {
     namespace "pk.org.indushospital.malariaguide"
     compileSdk 34
@@ -29,11 +45,8 @@ android {
         minSdk 23
         targetSdk 34
 
-        // Both injected by CI: versionName from APP_VERSION in index.html so
-        // the launcher and the page's footer can never disagree, versionCode
-        // from the build number so every build is upgradeable.
-        versionCode (System.getenv("ANDROID_VERSION_CODE") ?: "1") as Integer
-        versionName System.getenv("ANDROID_VERSION_NAME") ?: "0.0.0-dev"
+        versionCode vCode
+        versionName vName
     }
 
     if (hasKeystore) {
