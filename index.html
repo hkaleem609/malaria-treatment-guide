@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,6 +24,9 @@
   --shadow:0 1px 2px rgba(14,26,43,.05), 0 8px 28px rgba(14,26,43,.08);
   --shadow-sm:0 1px 2px rgba(14,26,43,.06);
   --font:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Urdu: system faces only — no web fonts, the page must work offline.
+     Nastaliq first where installed, Naskh / Segoe UI as the universal fallback. */
+  --font-ur:"Noto Nastaliq Urdu","Jameel Noori Nastaleeq","Alvi Nastaleeq","Urdu Typesetting","Noto Naskh Arabic","Geeza Pro",-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;}
 html{-webkit-text-size-adjust:100%;}
@@ -87,6 +90,25 @@ body{
 .rolechip em{
   font-style:normal;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;
   color:var(--muted);padding-left:8px;border-left:1px solid #CBD9EE;
+}
+
+/* ---------- Language switch --------------------------------- */
+.langsw{
+  display:inline-flex;gap:2px;padding:2px;
+  border:1.5px solid #D6E2F5;background:var(--ih-blue-tint);border-radius:999px;
+}
+.langsw button{
+  border:none;background:none;font-family:inherit;
+  font-size:11.5px;font-weight:800;line-height:1;color:var(--ih-blue);
+  padding:6px 12px;min-height:30px;border-radius:999px;cursor:pointer;
+  transition:background .15s,color .15s;
+}
+.langsw button[data-lang="ur"]{font-family:var(--font-ur);font-size:13px;}
+.langsw button[aria-pressed="true"]{background:var(--ih-blue);color:#fff;}
+.langsw button:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(29,74,158,.25);}
+@media (max-width:640px){
+  .langsw button{min-height:44px;padding:8px 15px;font-size:12.5px;}
+  .langsw button[data-lang="ur"]{font-size:14.5px;}
 }
 
 /* ---------- Role gate (first visit) ------------------------- */
@@ -699,6 +721,120 @@ input.ctl[type=number]{-moz-appearance:textfield;}
   .howto-step{flex:none;}
 }
 
+/* pushed to the far end of its flex row (mirrored under [dir="rtl"]) */
+.badge-right{margin-left:auto;}
+
+/* ============================================================
+   URDU / RIGHT-TO-LEFT
+   · html[lang="ur"] carries the typography, [dir="rtl"] the mirroring
+   · letter-spacing and uppercase break Arabic-script shaping, so they
+     are cancelled wholesale rather than rule by rule
+   ============================================================ */
+html[lang="ur"] body{font-family:var(--font-ur);line-height:1.8;}
+html[lang="ur"] *{letter-spacing:normal !important;}
+html[lang="ur"] .f label,
+html[lang="ur"] .assess-head h2,
+html[lang="ur"] .tag,
+html[lang="ur"] .gate-lvl,
+html[lang="ur"] .reg-kicker,
+html[lang="ur"] .rx-eyebrow,
+html[lang="ur"] .path-title,
+html[lang="ur"] .actions-title,
+html[lang="ur"] .notes-title,
+html[lang="ur"] .lane-level,
+html[lang="ur"] .lane-you,
+html[lang="ur"] .io-label,
+html[lang="ur"] .sched-label,
+html[lang="ur"] .total-key,
+html[lang="ur"] .badge,
+html[lang="ur"] .lane-alt .mini{text-transform:none;}
+/* the brand lockup stays Latin */
+html[lang="ur"] .lockup-type{font-family:"Arial Black","Segoe UI",Arial,sans-serif;}
+html[lang="ur"] .drug-name{line-height:1.25;}
+/* numbers and drug strengths stay in the Latin face so digits read cleanly */
+html[lang="ur"] .day-dose,html[lang="ur"] .io-mg,html[lang="ur"] .total-val{font-family:var(--font);}
+
+/* The Urdu audience is community health workers with limited reading ability.
+   Arabic script needs more height than Latin at the same px, so the reading
+   copy is set larger and looser than the English — these values sit at or
+   above the phone sizes, which is why they are declared after the media
+   queries rather than inside them. */
+html[lang="ur"] .lane ul,
+html[lang="ur"] .lane-alt-body ul,
+html[lang="ur"] .steps li,
+html[lang="ur"] .alert,
+html[lang="ur"] .note-box,
+html[lang="ur"] .io-body,
+html[lang="ur"] .emerg-fact,
+html[lang="ur"] .steps-prompt,
+html[lang="ur"] .gate p{font-size:15px;line-height:1.85;}
+html[lang="ur"] .protocol-quote{font-size:14px;line-height:1.85;}
+html[lang="ur"] .lane-action{font-size:16px;}
+html[lang="ur"] .lane-alt summary{font-size:14px;}
+html[lang="ur"] .f label{font-size:13px;}
+html[lang="ur"] .ctl{font-size:15.5px;}
+html[lang="ur"] .lede{font-size:14px;line-height:1.75;}
+html[lang="ur"] .howto-step,
+html[lang="ur"] .foot{font-size:13px;line-height:1.8;}
+html[lang="ur"] .sched-label,
+html[lang="ur"] .io-label{font-size:13px;line-height:1.7;}
+html[lang="ur"] .actions-title,
+html[lang="ur"] .path-title,
+html[lang="ur"] .notes-title,
+html[lang="ur"] .reg-kicker{font-size:13px;}
+@media (max-width:640px){
+  html[lang="ur"] .ctl{font-size:16px;}   /* iOS zoom guard still applies */
+}
+
+[dir="rtl"] .brand-rule{background:linear-gradient(270deg,var(--ih-red) 0 34%, var(--ih-blue) 34% 100%);}
+[dir="rtl"] .rolechip em{padding-left:0;padding-right:8px;border-left:none;border-right:1px solid #CBD9EE;}
+[dir="rtl"] .gate-card{text-align:right;}
+[dir="rtl"] .titleband::after{right:auto;left:-70px;}
+[dir="rtl"] .assess-head .cue-text{margin-left:0;margin-right:auto;}
+[dir="rtl"] select.ctl{padding-right:12px;padding-left:32px;background-position:left 11px center;}
+[dir="rtl"] .rx::before{left:auto;right:0;}
+[dir="rtl"] .rx-head,[dir="rtl"] .rx-body{
+  padding-left:clamp(15px,2.5vw,21px);
+  padding-right:calc(6px + clamp(15px,2.5vw,21px));
+}
+[dir="rtl"] .reg-tagpos,
+[dir="rtl"] .badge-right,
+[dir="rtl"] .path-title .hint,
+[dir="rtl"] .actions-title .who,
+[dir="rtl"] .steps-prompt button{margin-left:0;margin-right:auto;}
+[dir="rtl"] .day::before{right:auto;left:100%;}
+[dir="rtl"] .total-val{margin-left:0;margin-right:auto;text-align:left;}
+[dir="rtl"] .alert{border-left-width:1px;border-right-width:4px;}
+[dir="rtl"] .alert-danger{border-left-color:#F0C4C6;border-right-color:var(--ih-red);}
+[dir="rtl"] .alert-warn{border-left-color:#F3E0B8;border-right-color:#D99012;}
+[dir="rtl"] .alert-info{border-left-color:#CFE1F7;border-right-color:var(--ih-blue);}
+[dir="rtl"] .alert-ref{border-left-color:#D3E2F5;border-right-color:var(--ih-blue);}
+[dir="rtl"] .lane ul,[dir="rtl"] .lane-alt-body ul{padding-left:0;padding-right:16px;}
+[dir="rtl"] .protocol-quote{border-left:none;border-right:3px solid var(--ih-blue);border-radius:6px 0 0 6px;}
+[dir="rtl"] .info-only{border-left:1px solid #F0C4C6;border-right:3px solid var(--ih-red);}
+[dir="rtl"] .lane-you{right:auto;left:12px;}
+[dir="rtl"] .io-mg{margin-left:0;margin-right:5px;}
+[dir="rtl"] .lane-alt summary::after{
+  margin-left:0;margin-right:auto;
+  border-right:none;border-left:2px solid var(--muted);transform:rotate(-45deg);
+}
+[dir="rtl"] .lane-alt[open] summary::after{transform:rotate(135deg);}
+[dir="rtl"] .steps li{padding-left:0;padding-right:33px;}
+[dir="rtl"] .steps li::before{left:auto;right:0;}
+@media (max-width:520px){ [dir="rtl"] .total-val{margin-right:0;text-align:right;} }
+@media (max-width:640px){
+  [dir="rtl"] .assess-head .cue-text{margin-right:0;}
+  [dir="rtl"] select.ctl{padding-right:14px;padding-left:36px;background-position:left 13px center;}
+  [dir="rtl"] .day{text-align:right;}
+  [dir="rtl"] .day-dose{margin-left:0;margin-right:auto;}
+  [dir="rtl"] .day-note{text-align:left;}
+  [dir="rtl"] .course.week .day{text-align:center;}
+  [dir="rtl"] .course.week .day-dose{margin-right:0;}
+  [dir="rtl"] .course.week .day-note{text-align:center;}
+  [dir="rtl"] .total-val{margin-right:0;text-align:right;}
+  [dir="rtl"] .steps-prompt button{margin-right:0;}
+}
+
 /* ---------- Print ------------------------------------------- */
 @media print{
   body{background:#fff;padding:0;}
@@ -707,7 +843,7 @@ input.ctl[type=number]{-moz-appearance:textfield;}
     -webkit-print-color-adjust:exact;print-color-adjust:exact;
   }
   .main{background:#fff;padding:12px 0;}
-  .toolbar,.howto,.assess-head .cue-text,.gate,.rolechip em,.stickybar{display:none !important;}
+  .toolbar,.howto,.assess-head .cue-text,.gate,.rolechip em,.stickybar,.langsw{display:none !important;}
   .lane-alt[open] .lane-alt-body{display:block;}
   /* the case summary is hidden on small screens in favour of the sticky bar —
      the printed record must always carry it */
@@ -743,49 +879,53 @@ input.ctl[type=number]{-moz-appearance:textfield;}
       </div>
     </div>
     <div class="brand-right">
-      <span class="tag" id="cds-tag"><span class="dot"></span>Clinical Decision Support</span>
+      <div class="langsw" role="group" id="lang-switch" data-i18n-aria="langAria" aria-label="Language">
+        <button type="button" data-lang="en" aria-pressed="true"  onclick="setLang('en')" lang="en">English</button>
+        <button type="button" data-lang="ur" aria-pressed="false" onclick="setLang('ur')" lang="ur">اردو</button>
+      </div>
+      <span class="tag" id="cds-tag"><span class="dot"></span><span data-i18n="cds">Clinical Decision Support</span></span>
       <button type="button" class="rolechip" id="role-chip" hidden onclick="openRoleGate()"
-              aria-label="Change your care setting">
+              data-i18n-aria="chipAria" aria-label="Change your care setting">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <b id="role-chip-text"></b><em>Change</em>
+        <b id="role-chip-text"></b><em data-i18n="chipChange">Change</em>
       </button>
     </div>
   </header>
   <div class="brand-rule"></div>
 
   <div class="titleband">
-    <h1>National Malaria Treatment Protocol</h1>
-    <p class="lede">Weight-based dosing, Primaquine therapy and referral guidance for community and facility-level care &middot; Directorate of MEAL &amp; Malaria Control Program</p>
+    <h1 data-i18n="pageTitle">National Malaria Treatment Protocol</h1>
+    <p class="lede" data-i18n="lede">Weight-based dosing, Primaquine therapy and referral guidance for community and facility-level care &middot; Directorate of MEAL &amp; Malaria Control Program</p>
     <div class="howto">
-      <span class="howto-step"><b>1</b>Enter patient details</span>
-      <span class="howto-step"><b>2</b>Read the regimen &amp; dosing</span>
-      <span class="howto-step"><b>3</b>Follow referral guidance</span>
+      <span class="howto-step"><b>1</b><span data-i18n="how1">Enter patient details</span></span>
+      <span class="howto-step"><b>2</b><span data-i18n="how2">Read the regimen &amp; dosing</span></span>
+      <span class="howto-step"><b>3</b><span data-i18n="how3">Follow referral guidance</span></span>
     </div>
   </div>
 
   <!-- ============ ROLE GATE — first visit only ============ -->
   <section class="gate" id="role-gate" hidden>
     <div class="gate-inner">
-      <h2>Where are you working?</h2>
-      <p>Dispensing rules differ by level — especially for Primaquine. Tell us your setting once and the protocol will be written for your role. You can change it any time.</p>
+      <h2 data-i18n="gateH">Where are you working?</h2>
+      <p data-i18n="gateP">Dispensing rules differ by level — especially for Primaquine. Tell us your setting once and the protocol will be written for your role. You can change it any time.</p>
 
       <div class="gate-opts">
         <button type="button" class="gate-card give" onclick="setRole('facility')">
           <div class="gate-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v4"/><path d="M14 8h-4"/><path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"/><path d="M2 22h20"/><path d="M9 22v-4h6v4"/></svg></div>
-          <div class="gate-lvl">Facility level</div>
+          <div class="gate-lvl" data-i18n="lvlFacility">Facility level</div>
           <div class="gate-where">BHU / RHC</div>
-          <div class="gate-act">You dispense Primaquine on site</div>
+          <div class="gate-act" data-i18n="gateActF">You dispense Primaquine on site</div>
         </button>
 
         <button type="button" class="gate-card refer" onclick="setRole('community')">
           <div class="gate-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg></div>
-          <div class="gate-lvl">Community level</div>
-          <div class="gate-where">iCCM / frontline CHW</div>
-          <div class="gate-act">You refer patients for Primaquine</div>
+          <div class="gate-lvl" data-i18n="lvlCommunity">Community level</div>
+          <div class="gate-where" data-i18n="whereCommunity">iCCM / frontline CHW</div>
+          <div class="gate-act" data-i18n="gateActC">You refer patients for Primaquine</div>
         </button>
       </div>
 
-      <button type="button" class="gate-skip" onclick="setRole('both')">Show both levels — decide later</button>
+      <button type="button" class="gate-skip" data-i18n="gateSkip" onclick="setRole('both')">Show both levels — decide later</button>
     </div>
   </section>
 
@@ -795,54 +935,54 @@ input.ctl[type=number]{-moz-appearance:textfield;}
     <section class="assess cue" id="assess">
       <div class="assess-head">
         <span class="n">1</span>
-        <h2>Patient Details</h2>
+        <h2 data-i18n="patientDetails">Patient Details</h2>
         <span class="cue-text">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
-          Select below — the protocol updates instantly
+          <span data-i18n="cueText">Select below — the protocol updates instantly</span>
         </span>
       </div>
 
       <div class="assess-grid">
         <div class="f">
-          <label for="species-select">Species</label>
+          <label for="species-select" data-i18n="lblSpecies">Species</label>
           <select id="species-select" class="ctl" onchange="runGuidelineEngine()">
             <option value="pv" selected>P. vivax</option>
             <option value="pf">P. falciparum</option>
-            <option value="mix">Mixed (Pf + Pv)</option>
+            <option value="mix" data-i18n="optMix">Mixed (Pf + Pv)</option>
           </select>
         </div>
 
         <div class="f">
-          <label for="age-select">Age / Weight Band</label>
+          <label for="age-select" data-i18n="lblAge">Age / Weight Band</label>
           <select id="age-select" class="ctl" onchange="runGuidelineEngine()">
-            <option value="u6m">&lt; 6 mo (&lt; 5 kg)</option>
-            <option value="g1">6 mo – 3 yr (5–14 kg)</option>
-            <option value="g2">3 – 8 yr (15–24 kg)</option>
-            <option value="g3">8 – 12 yr (25–34 kg)</option>
-            <option value="g4" selected>&gt; 12 yr / Adult (&gt; 35 kg)</option>
+            <option value="u6m" data-i18n="optU6m">&lt; 6 mo (&lt; 5 kg)</option>
+            <option value="g1" data-i18n="optG1">6 mo – 3 yr (5–14 kg)</option>
+            <option value="g2" data-i18n="optG2">3 – 8 yr (15–24 kg)</option>
+            <option value="g3" data-i18n="optG3">8 – 12 yr (25–34 kg)</option>
+            <option value="g4" data-i18n="optG4" selected>&gt; 12 yr / Adult (&gt; 35 kg)</option>
           </select>
         </div>
 
         <div class="f">
-          <label for="weight-input">Body Weight <span class="opt">— kg, optional</span></label>
+          <label for="weight-input"><span data-i18n="lblWeight">Body Weight</span> <span class="opt" data-i18n="lblWeightOpt">— kg, optional</span></label>
           <input id="weight-input" class="ctl" type="number" inputmode="decimal" min="1" max="200" step="0.5"
-                 placeholder="e.g. 60" oninput="runGuidelineEngine()">
+                 data-i18n-ph="phWeight" placeholder="e.g. 60" oninput="runGuidelineEngine()">
         </div>
 
         <div class="f">
-          <label for="stock-select">Chloroquine Stock</label>
+          <label for="stock-select" data-i18n="lblStock">Chloroquine Stock</label>
           <select id="stock-select" class="ctl" onchange="runGuidelineEngine()">
-            <option value="in_stock" selected>Available</option>
-            <option value="out_stock">Stockout</option>
+            <option value="in_stock" data-i18n="optInStock" selected>Available</option>
+            <option value="out_stock" data-i18n="optOutStock">Stockout</option>
           </select>
         </div>
 
         <div class="f">
-          <label for="status-select">Patient Group</label>
+          <label for="status-select" data-i18n="lblGroup">Patient Group</label>
           <select id="status-select" class="ctl" onchange="runGuidelineEngine()">
-            <option value="general" selected>Non-pregnant / Male</option>
-            <option value="preg">Pregnant</option>
-            <option value="lact">Lactating mother</option>
+            <option value="general" data-i18n="optGeneral" selected>Non-pregnant / Male</option>
+            <option value="preg" data-i18n="optPreg">Pregnant</option>
+            <option value="lact" data-i18n="optLact">Lactating mother</option>
           </select>
         </div>
 
@@ -857,7 +997,7 @@ input.ctl[type=number]{-moz-appearance:textfield;}
     <!-- ============ STEP 2 — the treatment ============ -->
     <div class="stickybar">
       <div class="sb-chips" id="sb-chips"></div>
-      <button type="button" class="sb-edit" onclick="jumpToDetails()">Edit</button>
+      <button type="button" class="sb-edit" data-i18n="btnEdit" onclick="jumpToDetails()">Edit</button>
     </div>
 
     <div id="protocol-output" aria-live="polite"></div>
@@ -865,21 +1005,21 @@ input.ctl[type=number]{-moz-appearance:textfield;}
     <div class="toolbar">
       <button type="button" class="btn" onclick="window.print()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
-        Print / Save as PDF
+        <span data-i18n="btnPrint">Print / Save as PDF</span>
       </button>
       <button type="button" class="btn" onclick="resetForm()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
-        Reset
+        <span data-i18n="btnReset">Reset</span>
       </button>
     </div>
 
   </main>
 
   <footer class="foot">
-    <div class="foot-disclaimer">
+    <div class="foot-disclaimer" data-i18n="footDisclaimer">
       <strong>Clinical decision support only.</strong> Summarises the National Malaria Treatment Guidelines and does not replace clinical judgement. Confirm diagnosis by microscopy or RDT before initiating treatment, and confirm tablet strength against the source before dispensing.
     </div>
-    <div>
+    <div data-i18n="footOrg">
       <strong>Indus Hospital &amp; Health Network</strong><br>
       Directorate of MEAL &amp; Malaria Control Program
     </div>
@@ -911,12 +1051,9 @@ const CQ_TABLE = [
   { max:Infinity, band:"> 50 kg",  d:[4,   4,   2  ] }
 ];
 
-const SPECIES_LABEL = { pv:"P. vivax", pf:"P. falciparum", mix:"Mixed infection" };
-const AGE_LABEL = {
-  u6m:"< 6 mo (< 5 kg)", g1:"6 mo – 3 yr (5–14 kg)", g2:"3 – 8 yr (15–24 kg)",
-  g3:"8 – 12 yr (25–34 kg)", g4:"Adult > 12 yr (> 35 kg)"
-};
-const STATUS_LABEL = { general:"Non-pregnant", preg:"Pregnant", lact:"Lactating mother" };
+/* Species binomials stay Latin in both languages — same in the source protocol.
+   Only the word "Mixed infection" is translated. */
+const speciesLabel = s => s === "mix" ? t("specMix") : (s === "pv" ? "P. vivax" : "P. falciparum");
 
 const ICON = {
   capsule:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5a6 6 0 0 1-8.49-8.49l7.5-7.5a6 6 0 0 1 8.49 8.49z"/><path d="m8.5 8.5 7 7"/></svg>`,
@@ -929,20 +1066,416 @@ const ICON = {
   route:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>`
 };
 
+/* ============================================================
+   LANGUAGE — English / Urdu
+   Every user-facing string lives here. Two deliberate exceptions,
+   both kept in Latin script in Urdu as well:
+     · drug names (Chloroquine, Artemether + Lumefantrine,
+       Primaquine) — they must match what is printed on the pack
+     · species binomials, units (mg/kg, kg) and abbreviations
+       (AL, CQ, PQ, RDT, BHU, RHC, iCCM, CHW, LHV, G6PD, DHQ, ACT)
+   Interpolating strings are stored as functions and called: t("fX")(a).
+   ============================================================ */
+const LANG_KEY = "nmtp-lang";
+let LANG = "en";
+
+const S = {
+en:{
+  dir:"ltr",
+  docTitle:"National Malaria Treatment Protocol | Indus Hospital & Health Network",
+  metaDesc:"Clinical decision support for the National Malaria Treatment Protocol — weight-based dosing, Primaquine therapy and referral guidance. Indus Hospital & Health Network.",
+  langAria:"Language",
+  cds:"Clinical Decision Support",
+  chipAria:"Change your care setting",
+  chipChange:"Change",
+  pageTitle:"National Malaria Treatment Protocol",
+  lede:"Weight-based dosing, Primaquine therapy and referral guidance for community and facility-level care &middot; Directorate of MEAL &amp; Malaria Control Program",
+  how1:"Enter patient details",
+  how2:"Read the regimen &amp; dosing",
+  how3:"Follow referral guidance",
+
+  gateH:"Where are you working?",
+  gateP:"Dispensing rules differ by level — especially for Primaquine. Tell us your setting once and the protocol will be written for your role. You can change it any time.",
+  lvlFacility:"Facility level",
+  whereFacility:"BHU / RHC",
+  gateActF:"You dispense Primaquine on site",
+  lvlCommunity:"Community level",
+  whereCommunity:"iCCM / frontline CHW",
+  gateActC:"You refer patients for Primaquine",
+  gateSkip:"Show both levels — decide later",
+
+  patientDetails:"Patient Details",
+  cueText:"Select below — the protocol updates instantly",
+  lblSpecies:"Species",
+  optMix:"Mixed (Pf + Pv)",
+  specMix:"Mixed infection",
+  lblAge:"Age / Weight Band",
+  optU6m:"&lt; 6 mo (&lt; 5 kg)",
+  optG1:"6 mo – 3 yr (5–14 kg)",
+  optG2:"3 – 8 yr (15–24 kg)",
+  optG3:"8 – 12 yr (25–34 kg)",
+  optG4:"&gt; 12 yr / Adult (&gt; 35 kg)",
+  lblWeight:"Body Weight",
+  lblWeightOpt:"— kg, optional",
+  phWeight:"e.g. 60",
+  lblStock:"Chloroquine Stock",
+  optInStock:"Available",
+  optOutStock:"Stockout",
+  lblGroup:"Patient Group",
+  optGeneral:"Non-pregnant / Male",
+  optPreg:"Pregnant",
+  optLact:"Lactating mother",
+  btnEdit:"Edit",
+  btnPrint:"Print / Save as PDF",
+  btnReset:"Reset",
+  footDisclaimer:"<strong>Clinical decision support only.</strong> Summarises the National Malaria Treatment Guidelines and does not replace clinical judgement. Confirm diagnosis by microscopy or RDT before initiating treatment, and confirm tablet strength against the source before dispensing.",
+  footOrg:"<strong>Indus Hospital &amp; Health Network</strong><br>Directorate of MEAL &amp; Malaria Control Program",
+
+  age:{ u6m:"< 6 mo (< 5 kg)", g1:"6 mo – 3 yr (5–14 kg)", g2:"3 – 8 yr (15–24 kg)",
+        g3:"8 – 12 yr (25–34 kg)", g4:"Adult > 12 yr (> 35 kg)" },
+  status:{ general:"Non-pregnant", preg:"Pregnant", lact:"Lactating mother" },
+  role:{ facility:"Facility · BHU / RHC", community:"Community · iCCM / CHW" },
+  ctxStockout:"CQ stockout",
+  tablet:"tablet", tablets:"tablets", day:"Day",
+  fMismatch:(w,exp,sel)=>`A weight of <strong>${w} kg</strong> falls in the <strong>${exp}</strong> band, but <strong>${sel}</strong> is selected. Confirm which is correct — tablet dosing follows body weight.`,
+
+  /* under-6-month emergency */
+  emergTitle:"Urgent Hospital Referral Required",
+  emergBadge:"Pediatric Emergency",
+  emergCat:"<strong>Patient category:</strong> Infant under 6 months of age or weighing less than 5 kg.",
+  emergDirective:`<strong>Clinical Directive:</strong> DO NOT administer routine oral anti-malarials (AL, CQ, or PQ) at the community level. Immediate referral to the nearest RHC or DHQ Hospital is mandatory for inpatient evaluation.`,
+  emergCommunity:`<strong>At community level:</strong> do not give any anti-malarial. Refer this infant immediately and accompany or arrange transport where possible, then follow up at the home to confirm the referral was completed.`,
+  emergFacility:`<strong>At facility level:</strong> assess for severe malaria and admit, or refer onward to DHQ Hospital for inpatient management. Age under 6 months is also a Primaquine contraindication.`,
+
+  /* blood-stage branches */
+  titleCQ:"P. vivax — Chloroquine first-line regimen",
+  badgeCQok:"CQ Available",
+  cqTags:["25 mg/kg total dose","Once daily · 3 days","Take with food"],
+  noteBodyWeight:"body weight",
+  fCqTotal:(tb,band)=>`${tb} &nbsp;·&nbsp; weight band ${band}`,
+  cqTotalLow:"25 mg/kg total — below the 11 kg tablet table; calculate by weight and confirm strength",
+  cqTotalNoW:"25 mg/kg total — enter body weight above for exact tablet counts",
+  clinicalCQ:"Chloroquine must be taken with meals to reduce gastrointestinal irritation. Confirm tablet strength against the source before dispensing.",
+  clinicalAL:"Take AL with milk, fatty food or a regular meal to maximise lumefantrine absorption. If vomiting occurs within 1 hour, repeat the full dose.",
+  clinicalMix:"Treat acute blood parasitaemia with AL immediately, then complete the 7-day Primaquine course to prevent recurrent vivax relapses.",
+  titleALstockout:"P. vivax — Artemether + Lumefantrine (CQ stockout)",
+  badgeStockout:"Chloroquine Stockout",
+  alertStockout:`<strong>Stockout policy:</strong> where Chloroquine is unavailable, <strong>Artemether + Lumefantrine</strong> may be used as a first-line drug for uncomplicated P. vivax — provided the case is confirmed by microscopy or a rapid diagnostic test (RDT).`,
+  titlePF:"P. falciparum — Artemether + Lumefantrine regimen",
+  badgeACT:"Standard ACT",
+  titleMix:"Mixed infection (P. falciparum + P. vivax)",
+  badgeDual:"Dual-Action Regimen",
+  alTagFreq:"Twice daily · 3 days",
+  alTagRate:"Artemether 1.7 mg/kg · Lumefantrine 12 mg/kg",
+  morningEvening:"Morning + Evening",
+  fAlTotal:(n,str)=>`${n} tablets of ${str} &nbsp;·&nbsp; 6 doses over 3 days`,
+  alertPreg:`<strong>Confirm gestational age before starting AL.</strong> Artemether + Lumefantrine is not recommended in the <strong>first trimester</strong> — oral Quinine (10 mg/kg 8-hourly for 7 days) is indicated instead. <em>Action: refer to DHQ Hospital to confirm trimester and supervise treatment.</em>`,
+
+  /* Primaquine */
+  pqDurationPF:"Single dose on the first day of treatment",
+  pqDurationPV:"One dose daily for 7 days, taken with food",
+  pqDosePF:"Give the single <strong>0.25 mg/kg</strong> gametocytocidal dose on Day 1, alongside ACT.",
+  pqDosePV:"Dispense the <strong>7-day 0.5 mg/kg/day</strong> radical cure with food, alongside or following Chloroquine.",
+  quote:"“For Primaquine, the community health worker must refer the patient to the nearest health centre and keep following up on treatment.”",
+  quoteSrc:"National treatment protocol",
+  actFacility:"Dispense on site",
+  actCommunity:"Refer — do not dispense",
+  fLaneF:d=>[
+    `Staffed by <strong>Medical Officers, LHVs and Medical Technicians</strong>; Primaquine is kept in stock and given directly to confirmed cases.`,
+    `<strong>Screen for contraindications</strong> — pregnancy, active lactation, and infants under 6 months.`,
+    `<strong>Counsel on acute haemolysis</strong> — dark or tea-coloured urine means stop and return immediately.`,
+    d ],
+  fLaneC:blood=>[
+    `Dispense <strong>blood-stage treatment only</strong> (${blood}) after confirming malaria by RDT.`,
+    `CHWs are <strong>strictly barred</strong> from giving Primaquine — no laboratory support or emergency response for <strong>G6PD-induced haemolytic crises</strong>.`,
+    `Issue an <strong>official referral slip</strong> to the tagged BHU or RHC for Primaquine initiation.`,
+    `<strong>Follow up at the patient's home</strong> to confirm the full course is completed and monitor for adverse reactions.` ],
+  laneYou:"Your setting",
+  pathTitle:"Who dispenses Primaquine",
+  hintF:"Your level in full · community level collapsed",
+  hintC:"Your level in full · facility level collapsed",
+  hintBoth:"Depends on where the patient is seen",
+
+  /* action plan */
+  actionsTitle:"Your action plan",
+  bothPrompt:"Choose your care setting to get a step-by-step list written for your role.",
+  bothBtn:"Choose setting",
+  courseAL:"twice daily for 3 days (6 doses)",
+  courseCQ:"once daily for 3 days, with food",
+  whyPreg:"pregnancy", whyLact:"lactation",
+  stepConfirmMicro:`Confirm the diagnosis by <strong>microscopy or RDT</strong>.`,
+  stepConfirmRDT:`Confirm malaria by <strong>RDT</strong> before treating.`,
+  fStepBlood:(drug,course)=>`Dispense the blood-stage course — <strong>${drug}</strong>, ${course}.`,
+  fStepScreenPos:why=>`<strong>Screen for Primaquine contraindications</strong> — this patient screens positive for <strong>${why}</strong>.`,
+  stepNoPQfile:`<strong>Do not dispense Primaquine.</strong> Record the deferred course in the patient's file.`,
+  stepSchedule:`Schedule radical cure for when it is safe to give, and arrange follow-up.`,
+  stepScreenNone:`<strong>Screen for contraindications</strong> — pregnancy, active lactation, infant under 6 months. None apply here.`,
+  fStepGivePQ:isPf=>`Dispense Primaquine — ${isPf ? "single 0.25 mg/kg dose on Day 1" : "7-day 0.5 mg/kg/day course with food"}.`,
+  stepCounsel:`<strong>Counsel on haemolysis</strong> — dark or tea-coloured urine means stop and return immediately.`,
+  stepRecord:`Record the case and arrange follow-up.`,
+  fStepNoPQcomm:why=>`<strong>Do not give Primaquine</strong> — contraindicated in ${why}, and CHWs do not dispense it in any case.`,
+  stepReferDeferred:`Refer to the tagged BHU or RHC so the deferred course can be recorded and scheduled.`,
+  stepHomeBlood:`<strong>Follow up at the patient's home</strong> to confirm the blood-stage course is completed.`,
+  stepSlip:`<strong>Do not give Primaquine.</strong> Issue an <strong>official referral slip</strong> to the tagged BHU or RHC for Primaquine initiation.`,
+  stepHomeFull:`<strong>Follow up at the patient's home</strong> to confirm the full course is completed and watch for adverse reactions — especially <strong>dark or tea-coloured urine</strong>.`,
+
+  /* regimen frames */
+  regBlood:"Blood-stage treatment",
+  regPQ:"Primaquine therapy",
+  badgeFirstLine:"First-line regimen",
+  badgeContra:"Contraindicated",
+  badgeReferNo:"Refer — do not dispense",
+  fNotDuring:why=>`Not to be given during ${why}`,
+  fPqContra:(why,isPreg)=>`<strong>Do NOT administer Primaquine during ${why}.</strong> ${isPreg
+      ? "Defer radical cure until after delivery and cessation of breastfeeding."
+      : "Defer radical cure until breastfeeding has ceased."}`,
+  pqContraInfo:`<strong>This contraindication is caught by facility-level screening.</strong> At BHU / RHC level, clinical staff verify pregnancy, active lactation and age under 6 months before dispensing. At community level the patient is referred regardless — CHWs do not dispense Primaquine.`,
+  referralTitle:"Referral protocol",
+  referralDeferred:`Record the deferred Primaquine course in the patient's file and refer to the tagged BHU or RHC so radical cure can be scheduled once it is safe to give.`,
+  g6pdCommunity:`<strong>G6PD haemolysis watch — your job during home follow-up.</strong> Tell the patient that <strong>dark or tea-coloured urine</strong> means stop Primaquine and return to the health facility immediately.`,
+  g6pdBoth:`<strong>G6PD haemolysis watch — applies at both levels.</strong> Counsel every patient that <strong>dark or tea-coloured urine</strong> means stop Primaquine and return to the health facility immediately.`,
+  ioLabel:"For information only — dispensed at the facility, not by you",
+  fIoBody:(rate,isPf)=>`<strong>Primaquine</strong> — ${rate} mg/kg ${isPf ? "as a single dose on Day 1" : "once daily for 7 days, taken with food"}`,
+  fIoMg:(mg,isPf,w)=>`${mg}${isPf ? "" : " per dose"} at ${w} kg`,
+  ioTail:"Use this to tell the patient what to expect at the BHU / RHC.",
+  fPqRate:r=>`${r} mg/kg body weight`,
+  schedPF:"Single-dose schedule · given alongside ACT",
+  schedPV:"7-day radical cure schedule · one dose daily with food",
+  singleDose:"Single dose",
+  totalKeyPF:"Total dose",
+  totalKeyPV:"Course length",
+  fTotalPF:d=>`Single dose on Day 1 — ${d}`,
+  fTotalPV:d=>`7 daily doses of ${d}, taken with food`,
+  totalDispense:"Total to dispense",
+  rxEyebrow:"Step 2 · Recommended protocol",
+  notesTitle:"Clinical notes &amp; administration"
+},
+
+/* Urdu is written for community health workers with limited reading ability:
+   short sentences, everyday spoken words, no formal or Persianised vocabulary.
+   Medical substance is identical to the English — only the wording is plainer. */
+ur:{
+  dir:"rtl",
+  docTitle:"ملیریا کے علاج کی قومی ہدایات | انڈس ہسپتال اینڈ ہیلتھ نیٹ ورک",
+  metaDesc:"ملیریا کے علاج کی قومی ہدایات — وزن کے حساب سے دوا کی مقدار، پرائماکوئن، اور مریض کو کب ہسپتال بھیجنا ہے۔ انڈس ہسپتال اینڈ ہیلتھ نیٹ ورک۔",
+  langAria:"زبان",
+  cds:"علاج میں مدد کے لیے",
+  chipAria:"اپنی جگہ بدلیں",
+  chipChange:"بدلیں",
+  pageTitle:"ملیریا کے علاج کی قومی ہدایات",
+  lede:"وزن کے حساب سے دوا کی مقدار، پرائماکوئن، اور مریض کو کب ہسپتال بھیجنا ہے &middot; ڈائریکٹوریٹ آف MEAL اور ملیریا کنٹرول پروگرام",
+  how1:"مریض کی تفصیل بھریں",
+  how2:"دوا اور مقدار دیکھیں",
+  how3:"ہسپتال بھیجنے کی ہدایت پڑھیں",
+
+  gateH:"آپ کہاں کام کرتے ہیں؟",
+  gateP:"دوا دینے کے اصول ہر جگہ الگ ہیں — خاص کر پرائماکوئن کے۔ ایک بار بتا دیں کہ آپ کہاں کام کرتے ہیں، پھر ہدایات آپ کے کام کے مطابق دکھائی جائیں گی۔ آپ اسے کبھی بھی بدل سکتے ہیں۔",
+  lvlFacility:"ہیلتھ سینٹر",
+  whereFacility:"BHU / RHC",
+  gateActF:"آپ پرائماکوئن خود دیتے ہیں",
+  lvlCommunity:"گاؤں / کمیونٹی",
+  whereCommunity:"iCCM / کمیونٹی ہیلتھ ورکر",
+  gateActC:"آپ پرائماکوئن کے لیے مریض کو ہیلتھ سینٹر بھیجتے ہیں",
+  gateSkip:"دونوں دکھائیں — بعد میں بتاؤں گا",
+
+  patientDetails:"مریض کی تفصیل",
+  cueText:"نیچے سے چنیں — ہدایات فوراً بدل جائیں گی",
+  lblSpecies:"ملیریا کی قسم",
+  optMix:"دونوں (Pf + Pv)",
+  specMix:"دونوں قسم کا ملیریا",
+  lblAge:"عمر / وزن",
+  optU6m:"&lt; 6 ماہ (&lt; 5 kg)",
+  optG1:"6 ماہ – 3 سال (5–14 kg)",
+  optG2:"3 – 8 سال (15–24 kg)",
+  optG3:"8 – 12 سال (25–34 kg)",
+  optG4:"&gt; 12 سال / بالغ (&gt; 35 kg)",
+  lblWeight:"وزن",
+  lblWeightOpt:"— کلو میں، ضروری نہیں",
+  phWeight:"جیسے 60",
+  lblStock:"کلوروکوئن موجود ہے؟",
+  optInStock:"ہاں، موجود ہے",
+  optOutStock:"نہیں، ختم ہے",
+  lblGroup:"مریض کون ہے",
+  optGeneral:"مرد / غیر حاملہ عورت",
+  optPreg:"حاملہ عورت",
+  optLact:"دودھ پلانے والی ماں",
+  btnEdit:"بدلیں",
+  btnPrint:"پرنٹ / PDF بنائیں",
+  btnReset:"دوبارہ شروع",
+  footDisclaimer:"<strong>یہ صرف علاج میں مدد کے لیے ہے۔</strong> یہ ملیریا کے علاج کی قومی ہدایات کا خلاصہ ہے اور ڈاکٹر کے فیصلے کی جگہ نہیں لے سکتا۔ علاج شروع کرنے سے پہلے خون کے ٹیسٹ (مائیکروسکوپی یا RDT) سے ملیریا پکا کر لیں۔ دوا دینے سے پہلے گولی کی طاقت (mg) ڈبے پر دیکھ لیں۔",
+  footOrg:"<strong>انڈس ہسپتال اینڈ ہیلتھ نیٹ ورک</strong><br>ڈائریکٹوریٹ آف MEAL اور ملیریا کنٹرول پروگرام",
+
+  age:{ u6m:"< 6 ماہ (< 5 kg)", g1:"6 ماہ – 3 سال (5–14 kg)", g2:"3 – 8 سال (15–24 kg)",
+        g3:"8 – 12 سال (25–34 kg)", g4:"بالغ > 12 سال (> 35 kg)" },
+  status:{ general:"غیر حاملہ", preg:"حاملہ", lact:"دودھ پلانے والی ماں" },
+  role:{ facility:"ہیلتھ سینٹر · BHU / RHC", community:"گاؤں · iCCM / CHW" },
+  ctxStockout:"CQ ختم ہے",
+  tablet:"گولی", tablets:"گولیاں", day:"دن",
+  fMismatch:(w,exp,sel)=>`وزن <strong>${w} kg</strong> ہے، جو <strong>${exp}</strong> میں آتا ہے۔ لیکن آپ نے <strong>${sel}</strong> چنا ہے۔ دیکھ لیں کون سا ٹھیک ہے — گولیاں وزن کے حساب سے دی جاتی ہیں۔`,
+
+  emergTitle:"فوراً ہسپتال بھیجیں",
+  emergBadge:"بچے کی ایمرجنسی",
+  emergCat:"<strong>مریض:</strong> 6 ماہ سے چھوٹا بچہ، یا 5 کلو سے کم وزن۔",
+  emergDirective:`<strong>ہدایت:</strong> گاؤں میں اس بچے کو ملیریا کی کوئی دوا (AL، CQ یا PQ) نہ دیں۔ اسے فوراً قریبی RHC یا DHQ ہسپتال بھیجیں تاکہ وہاں داخل کر کے علاج ہو۔`,
+  emergCommunity:`<strong>گاؤں میں:</strong> ملیریا کی کوئی دوا نہ دیں۔ بچے کو ابھی ہسپتال بھیجیں۔ ہو سکے تو ساتھ جائیں یا گاڑی کا بندوبست کریں۔ بعد میں گھر جا کر پوچھیں کہ ہسپتال گئے تھے یا نہیں۔`,
+  emergFacility:`<strong>ہیلتھ سینٹر میں:</strong> دیکھیں کہ ملیریا شدید تو نہیں۔ بچے کو داخل کریں، یا DHQ ہسپتال بھیج دیں۔ 6 ماہ سے چھوٹے بچے کو پرائماکوئن دینا بھی منع ہے۔`,
+
+  titleCQ:"P. vivax — پہلی دوا: Chloroquine",
+  badgeCQok:"CQ موجود ہے",
+  cqTags:["کل خوراک 25 mg/kg","دن میں 1 بار · 3 دن","کھانے کے ساتھ"],
+  noteBodyWeight:"وزن کے حساب سے",
+  fCqTotal:(tb,band)=>`${tb} &nbsp;·&nbsp; وزن ${band}`,
+  cqTotalLow:"کل 25 mg/kg — یہ وزن ٹیبل میں نہیں آتا (11 kg سے کم)۔ وزن سے حساب لگائیں اور گولی کی طاقت دیکھ لیں",
+  cqTotalNoW:"کل 25 mg/kg — گولیوں کی پوری گنتی کے لیے اوپر وزن لکھیں",
+  clinicalCQ:"Chloroquine کھانے کے ساتھ دیں، ورنہ پیٹ میں جلن ہو سکتی ہے۔ دوا دینے سے پہلے گولی کی طاقت ڈبے پر دیکھ لیں۔",
+  clinicalAL:"AL دودھ یا کھانے کے ساتھ دیں (گھی یا تیل والا کھانا بہتر ہے) تاکہ دوا اچھی طرح اثر کرے۔ اگر 1 گھنٹے کے اندر قے ہو جائے تو پوری خوراک دوبارہ دیں۔",
+  clinicalMix:"پہلے AL سے خون والے ملیریا کا علاج کریں۔ پھر پرائماکوئن کا 7 دن کا کورس پورا کروائیں تاکہ ملیریا دوبارہ نہ ہو۔",
+  titleALstockout:"P. vivax — Artemether + Lumefantrine (CQ ختم ہے)",
+  badgeStockout:"کلوروکوئن ختم",
+  alertStockout:`<strong>جب کلوروکوئن نہ ہو:</strong> تو P. vivax کے سادہ مریض کو <strong>Artemether + Lumefantrine</strong> پہلی دوا کے طور پر دی جا سکتی ہے۔ لیکن پہلے خون کے ٹیسٹ (مائیکروسکوپی یا RDT) سے ملیریا کا پکا ہونا ضروری ہے۔`,
+  titlePF:"P. falciparum — دوا: Artemether + Lumefantrine",
+  badgeACT:"عام ACT علاج",
+  titleMix:"دونوں قسم کا ملیریا (P. falciparum + P. vivax)",
+  badgeDual:"دو دواؤں والا علاج",
+  alTagFreq:"دن میں 2 بار · 3 دن",
+  alTagRate:"Artemether 1.7 mg/kg · Lumefantrine 12 mg/kg",
+  morningEvening:"صبح + شام",
+  fAlTotal:(n,str)=>`${str} کی ${n} گولیاں &nbsp;·&nbsp; 3 دن میں 6 خوراکیں`,
+  alertPreg:`<strong>AL دینے سے پہلے پوچھیں کہ حمل کو کتنے مہینے ہو گئے ہیں۔</strong> حمل کے <strong>پہلے 3 مہینوں</strong> میں Artemether + Lumefantrine نہیں دی جاتی۔ اس کے بجائے Quinine گولی (10 mg/kg، ہر 8 گھنٹے بعد، 7 دن) دی جاتی ہے۔ <em>کیا کریں: مریضہ کو DHQ ہسپتال بھیجیں تاکہ وہاں مہینے پکے کر کے، ڈاکٹر کی نگرانی میں علاج ہو۔</em>`,
+
+  pqDurationPF:"علاج کے پہلے دن صرف ایک خوراک",
+  pqDurationPV:"7 دن تک روز 1 خوراک، کھانے کے ساتھ",
+  pqDosePF:"پہلے دن ACT کے ساتھ <strong>0.25 mg/kg</strong> کی صرف ایک خوراک دیں۔",
+  pqDosePV:"Chloroquine کے ساتھ یا اس کے بعد <strong>7 دن تک روز 0.5 mg/kg</strong> کھانے کے ساتھ دیں۔",
+  quote:"”پرائماکوئن کے لیے کمیونٹی ہیلتھ ورکر مریض کو قریب ترین ہیلتھ سینٹر ریفر کرے اور علاج کی مسلسل پیروی کرتا رہے۔“",
+  quoteSrc:"قومی علاج پروٹوکول",
+  actFacility:"یہیں دوا دیں",
+  actCommunity:"ہیلتھ سینٹر بھیجیں — دوا نہ دیں",
+  fLaneF:d=>[
+    `یہاں <strong>میڈیکل آفیسر، LHV اور میڈیکل ٹیکنیشن</strong> ہوتے ہیں۔ پرائماکوئن یہاں رکھی ہوتی ہے اور مریض کو خود دی جاتی ہے۔`,
+    `<strong>پہلے دیکھیں کہ دوا دینا منع تو نہیں</strong> — حاملہ عورت، دودھ پلانے والی ماں، اور 6 ماہ سے چھوٹا بچہ۔`,
+    `<strong>مریض کو بتائیں کہ خون ٹوٹ سکتا ہے</strong> — اگر پیشاب گہرا یا چائے کے رنگ کا آئے تو دوا بند کر کے فوراً واپس آئے۔`,
+    d ],
+  fLaneC:blood=>[
+    `خون کے ٹیسٹ (RDT) سے ملیریا پکا کریں۔ پھر <strong>صرف خون والے ملیریا کی دوا</strong> (${blood}) دیں۔`,
+    `کمیونٹی ہیلتھ ورکر کو پرائماکوئن دینا <strong>بالکل منع</strong> ہے۔ وجہ: <strong>G6PD کی کمی</strong> والے مریض کا خون ٹوٹ سکتا ہے، اور گاؤں میں نہ لیبارٹری ہے نہ ایمرجنسی علاج۔`,
+    `مریض کو قریبی BHU یا RHC کے لیے <strong>ریفرل سلپ</strong> لکھ کر دیں۔`,
+    `<strong>مریض کے گھر جا کر دیکھیں</strong> کہ پورا کورس کھایا یا نہیں، اور کوئی تکلیف تو نہیں ہوئی۔` ],
+  laneYou:"آپ کی جگہ",
+  pathTitle:"پرائماکوئن کون دے سکتا ہے",
+  hintF:"آپ کی جگہ پوری · گاؤں والی مختصر",
+  hintC:"آپ کی جگہ پوری · ہیلتھ سینٹر والی مختصر",
+  hintBoth:"اس پر منحصر ہے کہ مریض کہاں آیا ہے",
+
+  actionsTitle:"آپ کو کیا کرنا ہے",
+  bothPrompt:"اپنی جگہ چنیں تاکہ آپ کے کام کے مطابق ایک ایک قدم کی فہرست مل جائے۔",
+  bothBtn:"جگہ چنیں",
+  courseAL:"دن میں 2 بار، 3 دن (کل 6 خوراکیں)",
+  courseCQ:"دن میں 1 بار، 3 دن، کھانے کے ساتھ",
+  whyPreg:"حمل", whyLact:"دودھ پلانے",
+  stepConfirmMicro:`<strong>خون کے ٹیسٹ (مائیکروسکوپی یا RDT)</strong> سے ملیریا پکا کریں۔`,
+  stepConfirmRDT:`علاج سے پہلے <strong>RDT</strong> سے ملیریا پکا کریں۔`,
+  fStepBlood:(drug,course)=>`خون والے ملیریا کی دوا دیں — <strong>${drug}</strong>، ${course}۔`,
+  fStepScreenPos:why=>`<strong>دیکھیں کہ پرائماکوئن دینا منع تو نہیں</strong> — اس مریضہ کو <strong>${why}</strong> کی وجہ سے منع ہے۔`,
+  stepNoPQfile:`<strong>پرائماکوئن نہ دیں۔</strong> مریض کی فائل میں لکھ دیں کہ یہ دوا بعد میں دینی ہے۔`,
+  stepSchedule:`جب دوا دینا محفوظ ہو جائے تب کا وقت طے کریں، اور مریض سے دوبارہ ملنے کا بندوبست کریں۔`,
+  stepScreenNone:`<strong>دیکھیں کہ دوا دینا منع تو نہیں</strong> — حمل، دودھ پلانا، 6 ماہ سے چھوٹا بچہ۔ ان میں سے کوئی بات نہیں ہے۔`,
+  fStepGivePQ:isPf=>`پرائماکوئن دیں — ${isPf ? "پہلے دن صرف ایک خوراک، 0.25 mg/kg" : "7 دن تک روز 0.5 mg/kg، کھانے کے ساتھ"}۔`,
+  stepCounsel:`<strong>مریض کو بتائیں کہ خون ٹوٹ سکتا ہے</strong> — پیشاب گہرا یا چائے کے رنگ کا آئے تو دوا بند کر کے فوراً واپس آئے۔`,
+  stepRecord:`مریض کی تفصیل رجسٹر میں لکھیں اور دوبارہ ملنے کا وقت طے کریں۔`,
+  fStepNoPQcomm:why=>`<strong>پرائماکوئن نہ دیں</strong> — ${why} میں یہ دوا منع ہے۔ ویسے بھی کمیونٹی ہیلتھ ورکر یہ دوا نہیں دے سکتا۔`,
+  stepReferDeferred:`مریض کو قریبی BHU یا RHC بھیجیں تاکہ وہاں لکھ لیا جائے کہ یہ دوا بعد میں دینی ہے۔`,
+  stepHomeBlood:`<strong>مریض کے گھر جا کر دیکھیں</strong> کہ خون والے ملیریا کی دوا پوری کھائی یا نہیں۔`,
+  stepSlip:`<strong>پرائماکوئن نہ دیں۔</strong> مریض کو قریبی BHU یا RHC کے لیے <strong>ریفرل سلپ</strong> لکھ کر دیں تاکہ وہاں سے یہ دوا شروع ہو۔`,
+  stepHomeFull:`<strong>مریض کے گھر جا کر دیکھیں</strong> کہ پورا کورس کھایا یا نہیں۔ خاص کر یہ پوچھیں کہ <strong>پیشاب گہرا یا چائے کے رنگ کا</strong> تو نہیں آیا۔`,
+
+  regBlood:"خون والے ملیریا کی دوا",
+  regPQ:"پرائماکوئن",
+  badgeFirstLine:"پہلی دوا",
+  badgeContra:"یہ دوا منع ہے",
+  badgeReferNo:"ہیلتھ سینٹر بھیجیں — دوا نہ دیں",
+  fNotDuring:why=>`${why} میں یہ دوا نہیں دی جاتی`,
+  fPqContra:(why,isPreg)=>`<strong>${why} میں پرائماکوئن ہرگز نہ دیں۔</strong> ${isPreg
+      ? "یہ دوا بچے کی پیدائش اور دودھ پلانا ختم ہونے کے بعد دی جائے گی۔"
+      : "یہ دوا دودھ پلانا ختم ہونے کے بعد دی جائے گی۔"}`,
+  pqContraInfo:`<strong>یہ بات ہیلتھ سینٹر پر جانچی جاتی ہے۔</strong> BHU / RHC کا عملہ دوا دینے سے پہلے دیکھتا ہے کہ عورت حاملہ تو نہیں، دودھ تو نہیں پلا رہی، اور بچہ 6 ماہ سے چھوٹا تو نہیں۔ گاؤں میں مریض کو ویسے بھی ہیلتھ سینٹر بھیجا جاتا ہے — کمیونٹی ہیلتھ ورکر یہ دوا نہیں دیتا۔`,
+  referralTitle:"مریض کو کہاں بھیجنا ہے",
+  referralDeferred:`مریض کی فائل میں لکھ دیں کہ پرائماکوئن بعد میں دینی ہے۔ مریض کو قریبی BHU یا RHC بھیجیں تاکہ جب دوا دینا محفوظ ہو جائے تو وہاں سے شروع کر دی جائے۔`,
+  g6pdCommunity:`<strong>خون ٹوٹنے (G6PD) کا خیال رکھنا آپ کا کام ہے۔</strong> مریض کو بتائیں: اگر <strong>پیشاب گہرا یا چائے کے رنگ کا</strong> آئے تو پرائماکوئن بند کر کے فوراً ہیلتھ سینٹر جائے۔`,
+  g6pdBoth:`<strong>خون ٹوٹنے (G6PD) کا خیال دونوں جگہ رکھنا ہے۔</strong> ہر مریض کو بتائیں: اگر <strong>پیشاب گہرا یا چائے کے رنگ کا</strong> آئے تو پرائماکوئن بند کر کے فوراً ہیلتھ سینٹر جائے۔`,
+  ioLabel:"صرف جاننے کے لیے — یہ دوا ہیلتھ سینٹر والے دیں گے، آپ نہیں",
+  fIoBody:(rate,isPf)=>`<strong>Primaquine</strong> — ${rate} mg/kg ${isPf ? "پہلے دن صرف ایک خوراک" : "روز 1 بار، 7 دن، کھانے کے ساتھ"}`,
+  fIoMg:(mg,isPf,w)=>`${w} kg پر ${mg}${isPf ? "" : " ہر خوراک"}`,
+  ioTail:"یہ مریض کو بتا دیں تاکہ اسے معلوم ہو کہ BHU / RHC پر کیا ہوگا۔",
+  fPqRate:r=>`${r} mg/kg وزن کے حساب سے`,
+  schedPF:"صرف ایک خوراک · ACT کے ساتھ",
+  schedPV:"7 دن کا کورس · روز 1 خوراک کھانے کے ساتھ",
+  singleDose:"ایک خوراک",
+  totalKeyPF:"کل خوراک",
+  totalKeyPV:"کتنے دن",
+  fTotalPF:d=>`پہلے دن ایک خوراک — ${d}`,
+  fTotalPV:d=>`7 دن، روز ایک خوراک ${d}، کھانے کے ساتھ`,
+  totalDispense:"کل کتنی دوا دینی ہے",
+  rxEyebrow:"مرحلہ 2 · تجویز کردہ علاج",
+  notesTitle:"دوا دیتے وقت کیا خیال رکھنا ہے"
+}
+};
+
+/* active-language lookup, falling back to English if a key is missing */
+const t = k => (S[LANG] && S[LANG][k] !== undefined) ? S[LANG][k] : S.en[k];
+
+function applyStaticI18n(){
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const v = t(el.getAttribute("data-i18n"));
+    if (v !== undefined) el.innerHTML = v;
+  });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => {
+    el.placeholder = t(el.getAttribute("data-i18n-ph"));
+  });
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => {
+    el.setAttribute("aria-label", t(el.getAttribute("data-i18n-aria")));
+  });
+  document.title = t("docTitle");
+  const md = document.querySelector('meta[name="description"]');
+  if (md) md.setAttribute("content", t("metaDesc"));
+}
+
+function setLang(lang, skipRender){
+  LANG = (lang === "ur") ? "ur" : "en";
+  try { localStorage.setItem(LANG_KEY, LANG); } catch(e){ /* private mode — session only */ }
+
+  const html = document.documentElement;
+  html.setAttribute("lang", LANG);
+  html.setAttribute("dir", t("dir"));
+
+  document.querySelectorAll("#lang-switch button").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+
+  applyStaticI18n();
+  renderRoleChip();
+  if (!skipRender && !document.getElementById("app-main").hidden) runGuidelineEngine();
+}
+
+function initLang(){
+  let saved = null;
+  try { saved = localStorage.getItem(LANG_KEY); } catch(e){ /* ignore */ }
+  setLang(saved === "ur" ? "ur" : "en", true);
+}
+
 /* ---------- helpers ---------------------------------------- */
 const fmt = n => Number.isInteger(n) ? String(n) : String(Math.round(n * 10) / 10);
-const tabs = n => `${fmt(n)} ${n === 1 ? "tablet" : "tablets"}`;
+const tabs = n => `${fmt(n)} ${n === 1 ? t("tablet") : t("tablets")}`;
 
 function alertBox(kind, iconKey, html, cls){
   return `<div class="alert alert-${kind} ${cls||""}">${ICON[iconKey]}<div>${html}</div></div>`;
 }
 function referralNote(html){
-  return `<div class="referral">${ICON.route}<div><b>Referral protocol</b>${html}</div></div>`;
+  return `<div class="referral">${ICON.route}<div><b>${t("referralTitle")}</b>${html}</div></div>`;
 }
 function dayCard(n, dose, note){
   return `<li class="day">
     <div class="day-num">${n}</div>
-    <div class="day-label">Day ${n}</div>
+    <div class="day-label">${t("day")} ${n}</div>
     <div class="day-dose">${dose}</div>
     ${note ? `<div class="day-note">${note}</div>` : ""}
   </li>`;
@@ -967,7 +1500,7 @@ function checkWeight(age, w){
 
   const expected = bandFromWeight(w);
   if (expected !== age) {
-    text.innerHTML = `A weight of <strong>${fmt(w)} kg</strong> falls in the <strong>${AGE_LABEL[expected]}</strong> band, but <strong>${AGE_LABEL[age]}</strong> is selected. Confirm which is correct — tablet dosing follows body weight.`;
+    text.innerHTML = t("fMismatch")(fmt(w), t("age")[expected], t("age")[age]);
     box.classList.add("show");
   } else {
     box.classList.remove("show");
@@ -991,10 +1524,7 @@ function resetForm(){
 const ROLE_KEY = "nmtp-care-setting";
 let ROLE = "both";
 
-const ROLE_LABEL = {
-  facility:  "Facility · BHU / RHC",
-  community: "Community · iCCM / CHW"
-};
+const roleLabel = r => t("role")[r];
 
 function showGate(on){
   document.getElementById("role-gate").hidden = !on;
@@ -1005,7 +1535,7 @@ function renderRoleChip(){
   const tag  = document.getElementById("cds-tag");
   if (ROLE === "both"){ chip.hidden = true; tag.hidden = false; return; }
   tag.hidden = true; chip.hidden = false;
-  document.getElementById("role-chip-text").textContent = ROLE_LABEL[ROLE];
+  document.getElementById("role-chip-text").textContent = roleLabel(ROLE);
 }
 function setRole(role){
   ROLE = role;
@@ -1062,12 +1592,12 @@ function runGuidelineEngine(){
      and in the mobile sticky bar. Built before the early return so the
      sticky bar stays correct on the emergency-referral screen too. */
   const ctxParts = [
-    { t: SPECIES_LABEL[species] },
-    { t: AGE_LABEL[age] },
+    { t: speciesLabel(species) },
+    { t: t("age")[age] },
     ...(w ? [{ t: `${fmt(w)} kg` }] : []),
-    { t: STATUS_LABEL[status], warn: isPregLact },
-    ...(stock === "out_stock" ? [{ t: "CQ stockout", warn: true }] : []),
-    ...(ROLE !== "both" ? [{ t: ROLE_LABEL[ROLE] }] : [])
+    { t: t("status")[status], warn: isPregLact },
+    ...(stock === "out_stock" ? [{ t: t("ctxStockout"), warn: true }] : []),
+    ...(ROLE !== "both" ? [{ t: roleLabel(ROLE) }] : [])
   ];
   const ctx = ctxParts.map(p => `<span class="ctx${p.warn ? " warn" : ""}">${p.t}</span>`).join("");
   document.getElementById("sb-chips").innerHTML =
@@ -1079,20 +1609,16 @@ function runGuidelineEngine(){
       <div class="emerg">
         <div class="emerg-head">
           ${ICON.alert}
-          <h2>Urgent Hospital Referral Required</h2>
-          <span class="badge badge-alert" style="margin-left:auto;">Pediatric Emergency</span>
+          <h2>${t("emergTitle")}</h2>
+          <span class="badge badge-alert badge-right">${t("emergBadge")}</span>
         </div>
         <div class="emerg-body">
-          <div class="emerg-fact"><strong>Patient category:</strong> Infant under 6 months of age or weighing less than 5 kg.</div>
-          ${alertBox("danger","alert",
-            `<strong>Clinical Directive:</strong> DO NOT administer routine oral anti-malarials (AL, CQ, or PQ) at the community level.
-             Immediate referral to the nearest RHC or DHQ Hospital is mandatory for inpatient evaluation.`)}
+          <div class="emerg-fact">${t("emergCat")}</div>
+          ${alertBox("danger","alert", t("emergDirective"))}
           ${ROLE === "community"
-            ? alertBox("warn","route",
-                `<strong>At community level:</strong> do not give any anti-malarial. Refer this infant immediately and accompany or arrange transport where possible, then follow up at the home to confirm the referral was completed.`)
+            ? alertBox("warn","route", t("emergCommunity"))
             : ROLE === "facility"
-            ? alertBox("info","hospital",
-                `<strong>At facility level:</strong> assess for severe malaria and admit, or refer onward to DHQ Hospital for inpatient management. Age under 6 months is also a Primaquine contraindication.`)
+            ? alertBox("info","hospital", t("emergFacility"))
             : ""}
         </div>
       </div>`;
@@ -1107,10 +1633,10 @@ function runGuidelineEngine(){
   let usesAL = false;
 
   if (species === "pv" && stock === "in_stock"){
-    title = "P. vivax — Chloroquine first-line regimen";
-    badge = `<span class="badge badge-ok">CQ Available</span>`;
+    title = t("titleCQ");
+    badge = `<span class="badge badge-ok">${t("badgeCQok")}</span>`;
     bDrug = "Chloroquine";
-    bTags = ["25 mg/kg total dose", "Once daily · 3 days", "Take with food"];
+    bTags = t("cqTags");
 
     const row = cqRow(w);
     if (row){
@@ -1120,67 +1646,62 @@ function runGuidelineEngine(){
         ${dayCard(3, tabs(row.d[2]), "5 mg/kg")}
       </ol>`;
       const tot = row.d[0] + row.d[1] + row.d[2];
-      bTotal = `${tabs(tot)} &nbsp;·&nbsp; weight band ${row.band}`;
+      bTotal = t("fCqTotal")(tabs(tot), row.band);
     } else {
+      const bw = t("noteBodyWeight");
       bSchedule = `<ol class="course">
-        ${dayCard(1, "10 mg/kg", "body weight")}
-        ${dayCard(2, "10 mg/kg", "body weight")}
-        ${dayCard(3, "5 mg/kg",  "body weight")}
+        ${dayCard(1, "10 mg/kg", bw)}
+        ${dayCard(2, "10 mg/kg", bw)}
+        ${dayCard(3, "5 mg/kg",  bw)}
       </ol>`;
-      bTotal = w
-        ? `25 mg/kg total — below the 11 kg tablet table; calculate by weight and confirm strength`
-        : `25 mg/kg total — enter body weight above for exact tablet counts`;
+      bTotal = w ? t("cqTotalLow") : t("cqTotalNoW");
     }
-    clinicalHtml = "Chloroquine must be taken with meals to reduce gastrointestinal irritation. Confirm tablet strength against the source before dispensing.";
+    clinicalHtml = t("clinicalCQ");
 
   } else if (species === "pv" && stock === "out_stock"){
-    title = "P. vivax — Artemether + Lumefantrine (CQ stockout)";
-    badge = `<span class="badge badge-warn">Chloroquine Stockout</span>`;
+    title = t("titleALstockout");
+    badge = `<span class="badge badge-warn">${t("badgeStockout")}</span>`;
     usesAL = true;
-    topAlert = alertBox("warn","alert",
-      `<strong>Stockout policy:</strong> where Chloroquine is unavailable, <strong>Artemether + Lumefantrine</strong> may be used as a first-line drug for uncomplicated P. vivax — provided the case is confirmed by microscopy or a rapid diagnostic test (RDT).`);
-    clinicalHtml = "Take AL with milk, fatty food or a regular meal to maximise lumefantrine absorption. If vomiting occurs within 1 hour, repeat the full dose.";
+    topAlert = alertBox("warn","alert", t("alertStockout"));
+    clinicalHtml = t("clinicalAL");
 
   } else if (species === "pf"){
-    title = "P. falciparum — Artemether + Lumefantrine regimen";
-    badge = `<span class="badge badge-info">Standard ACT</span>`;
+    title = t("titlePF");
+    badge = `<span class="badge badge-info">${t("badgeACT")}</span>`;
     usesAL = true;
-    clinicalHtml = "Take AL with milk, fatty food or a regular meal to maximise lumefantrine absorption. If vomiting occurs within 1 hour, repeat the full dose.";
+    clinicalHtml = t("clinicalAL");
 
   } else {
-    title = "Mixed infection (P. falciparum + P. vivax)";
-    badge = `<span class="badge badge-warn">Dual-Action Regimen</span>`;
+    title = t("titleMix");
+    badge = `<span class="badge badge-warn">${t("badgeDual")}</span>`;
     usesAL = true;
-    clinicalHtml = "Treat acute blood parasitaemia with AL immediately, then complete the 7-day Primaquine course to prevent recurrent vivax relapses.";
+    clinicalHtml = t("clinicalMix");
   }
 
   if (usesAL){
     bDrug = "Artemether + Lumefantrine";
-    bTags = [al.strength, "Twice daily · 3 days", "Artemether 1.7 mg/kg · Lumefantrine 12 mg/kg"];
+    bTags = [al.strength, t("alTagFreq"), t("alTagRate")];
+    const me = t("morningEvening");
     bSchedule = `<ol class="course">
-      ${dayCard(1, al.d[0], "Morning + Evening")}
-      ${dayCard(2, al.d[1], "Morning + Evening")}
-      ${dayCard(3, al.d[2], "Morning + Evening")}
+      ${dayCard(1, al.d[0], me)}
+      ${dayCard(2, al.d[1], me)}
+      ${dayCard(3, al.d[2], me)}
     </ol>`;
-    bTotal = `${al.total} tablets of ${al.strength} &nbsp;·&nbsp; 6 doses over 3 days`;
+    bTotal = t("fAlTotal")(al.total, al.strength);
   }
 
   /* Pregnancy caution wherever AL is used */
   if (usesAL && isPreg){
-    topAlert += alertBox("danger","alert",
-      `<strong>Confirm gestational age before starting AL.</strong> Artemether + Lumefantrine is not recommended in the <strong>first trimester</strong> — oral Quinine (10 mg/kg 8-hourly for 7 days) is indicated instead.
-       <em>Action: refer to DHQ Hospital to confirm trimester and supervise treatment.</em>`, "mt");
+    topAlert += alertBox("danger","alert", t("alertPreg"), "mt");
   }
 
   /* ---- Regimen 2: Primaquine ------------------------------- */
   const pq = (species === "pf")
-    ? { rate:0.25, when:"Day 1 only", duration:"Single dose on the first day of treatment",
-        purpose:"Gametocytocidal — blocks onward transmission",
-        facilityDose:"Give the single <strong>0.25 mg/kg</strong> gametocytocidal dose on Day 1, alongside ACT.",
+    ? { rate:0.25, duration:t("pqDurationPF"),
+        facilityDose:t("pqDosePF"),
         blood:"Artemether + Lumefantrine" }
-    : { rate:0.5,  when:"Days 1 – 7", duration:"One dose daily for 7 days, taken with food",
-        purpose:"Radical cure — eradicates liver hypnozoites",
-        facilityDose:"Dispense the <strong>7-day 0.5 mg/kg/day</strong> radical cure with food, alongside or following Chloroquine.",
+    : { rate:0.5,  duration:t("pqDurationPV"),
+        facilityDose:t("pqDosePV"),
         blood:(species === "pv" && stock === "in_stock") ? "Chloroquine" : "Artemether + Lumefantrine" };
 
   /* Two dispensing pathways. The user's own level is shown in full; the other
@@ -1189,30 +1710,20 @@ function runGuidelineEngine(){
      recoverable. With no role chosen, both are shown side by side. */
   const QUOTE = `
     <div class="protocol-quote">
-      “For Primaquine, the community health worker must refer the patient to the nearest health centre and keep following up on treatment.”
-      <span>National treatment protocol</span>
+      ${t("quote")}
+      <span>${t("quoteSrc")}</span>
     </div>`;
 
   const LANE = {
     facility: {
-      cls:"give", ico:ICON.hospital, level:"Facility level", where:"BHU / RHC",
-      action:"Dispense on site",
-      bullets:[
-        `Staffed by <strong>Medical Officers, LHVs and Medical Technicians</strong>; Primaquine is kept in stock and given directly to confirmed cases.`,
-        `<strong>Screen for contraindications</strong> — pregnancy, active lactation, and infants under 6 months.`,
-        `<strong>Counsel on acute haemolysis</strong> — dark or tea-coloured urine means stop and return immediately.`,
-        pq.facilityDose
-      ]
+      cls:"give", ico:ICON.hospital, level:t("lvlFacility"), where:t("whereFacility"),
+      action:t("actFacility"),
+      bullets:t("fLaneF")(pq.facilityDose)
     },
     community: {
-      cls:"refer", ico:ICON.route, level:"Community level", where:"iCCM / frontline CHW",
-      action:"Refer — do not dispense",
-      bullets:[
-        `Dispense <strong>blood-stage treatment only</strong> (${pq.blood}) after confirming malaria by RDT.`,
-        `CHWs are <strong>strictly barred</strong> from giving Primaquine — no laboratory support or emergency response for <strong>G6PD-induced haemolytic crises</strong>.`,
-        `Issue an <strong>official referral slip</strong> to the tagged BHU or RHC for Primaquine initiation.`,
-        `<strong>Follow up at the patient's home</strong> to confirm the full course is completed and monitor for adverse reactions.`
-      ],
+      cls:"refer", ico:ICON.route, level:t("lvlCommunity"), where:t("whereCommunity"),
+      action:t("actCommunity"),
+      bullets:t("fLaneC")(pq.blood),
       quote:true
     }
   };
@@ -1220,7 +1731,7 @@ function runGuidelineEngine(){
   function laneFull(L, active){
     return `
       <div class="lane ${L.cls}${active ? " on" : ""}">
-        ${active ? `<span class="lane-you">Your setting</span>` : ""}
+        ${active ? `<span class="lane-you">${t("laneYou")}</span>` : ""}
         <div class="lane-head">
           <div class="lane-ico">${L.ico}</div>
           <div class="lane-meta">
@@ -1249,15 +1760,15 @@ function runGuidelineEngine(){
     let body, hint;
     if (ROLE === "facility"){
       body = laneFull(LANE.facility, true) + laneCollapsed(LANE.community);
-      hint = "Your level in full · community level collapsed";
+      hint = t("hintF");
     } else if (ROLE === "community"){
       body = laneFull(LANE.community, true) + laneCollapsed(LANE.facility);
-      hint = "Your level in full · facility level collapsed";
+      hint = t("hintC");
     } else {
       body = `<div class="pathways">${laneFull(LANE.facility,false)}${laneFull(LANE.community,false)}</div>`;
-      hint = "Depends on where the patient is seen";
+      hint = t("hintBoth");
     }
-    return `<div class="path-title">${ICON.route} Who dispenses Primaquine
+    return `<div class="path-title">${ICON.route} ${t("pathTitle")}
       <span class="hint">${hint}</span></div>${body}`;
   }
 
@@ -1265,43 +1776,41 @@ function runGuidelineEngine(){
   function actionPlan(){
     if (ROLE === "both"){
       return `<div class="actions">
-        <div class="actions-title">${ICON.notes} Your action plan</div>
+        <div class="actions-title">${ICON.notes} ${t("actionsTitle")}</div>
         <div class="steps-prompt">
-          <span>Choose your care setting to get a step-by-step list written for your role.</span>
-          <button type="button" onclick="openRoleGate()">Choose setting</button>
+          <span>${t("bothPrompt")}</span>
+          <button type="button" onclick="openRoleGate()">${t("bothBtn")}</button>
         </div>
       </div>`;
     }
 
-    const courseTxt = usesAL
-      ? "twice daily for 3 days (6 doses)"
-      : "once daily for 3 days, with food";
-    const why  = isPreg ? "pregnancy" : "lactation";
+    const courseTxt = usesAL ? t("courseAL") : t("courseCQ");
+    const why  = isPreg ? t("whyPreg") : t("whyLact");
     const s    = [];
 
     if (ROLE === "facility"){
-      s.push(`Confirm the diagnosis by <strong>microscopy or RDT</strong>.`);
-      s.push(`Dispense the blood-stage course — <strong>${bDrug}</strong>, ${courseTxt}.`);
+      s.push(t("stepConfirmMicro"));
+      s.push(t("fStepBlood")(bDrug, courseTxt));
       if (isPregLact){
-        s.push(`<strong>Screen for Primaquine contraindications</strong> — this patient screens positive for <strong>${why}</strong>.`);
-        s.push({ stop:true, t:`<strong>Do not dispense Primaquine.</strong> Record the deferred course in the patient's file.` });
-        s.push(`Schedule radical cure for when it is safe to give, and arrange follow-up.`);
+        s.push(t("fStepScreenPos")(why));
+        s.push({ stop:true, t:t("stepNoPQfile") });
+        s.push(t("stepSchedule"));
       } else {
-        s.push(`<strong>Screen for contraindications</strong> — pregnancy, active lactation, infant under 6 months. None apply here.`);
-        s.push(`Dispense Primaquine — ${species === "pf" ? "single 0.25 mg/kg dose on Day 1" : "7-day 0.5 mg/kg/day course with food"}.`);
-        s.push(`<strong>Counsel on haemolysis</strong> — dark or tea-coloured urine means stop and return immediately.`);
-        s.push(`Record the case and arrange follow-up.`);
+        s.push(t("stepScreenNone"));
+        s.push(t("fStepGivePQ")(species === "pf"));
+        s.push(t("stepCounsel"));
+        s.push(t("stepRecord"));
       }
     } else {
-      s.push(`Confirm malaria by <strong>RDT</strong> before treating.`);
-      s.push(`Dispense the blood-stage course — <strong>${bDrug}</strong>, ${courseTxt}.`);
+      s.push(t("stepConfirmRDT"));
+      s.push(t("fStepBlood")(bDrug, courseTxt));
       if (isPregLact){
-        s.push({ stop:true, t:`<strong>Do not give Primaquine</strong> — contraindicated in ${why}, and CHWs do not dispense it in any case.` });
-        s.push(`Refer to the tagged BHU or RHC so the deferred course can be recorded and scheduled.`);
-        s.push(`<strong>Follow up at the patient's home</strong> to confirm the blood-stage course is completed.`);
+        s.push({ stop:true, t:t("fStepNoPQcomm")(why) });
+        s.push(t("stepReferDeferred"));
+        s.push(t("stepHomeBlood"));
       } else {
-        s.push({ stop:true, t:`<strong>Do not give Primaquine.</strong> Issue an <strong>official referral slip</strong> to the tagged BHU or RHC for Primaquine initiation.` });
-        s.push(`<strong>Follow up at the patient's home</strong> to confirm the full course is completed and watch for adverse reactions — especially <strong>dark or tea-coloured urine</strong>.`);
+        s.push({ stop:true, t:t("stepSlip") });
+        s.push(t("stepHomeFull"));
       }
     }
 
@@ -1310,8 +1819,8 @@ function runGuidelineEngine(){
       : `<li class="stop">${x.t}</li>`).join("");
 
     return `<div class="actions">
-      <div class="actions-title">${ICON.notes} Your action plan
-        <span class="who">${ROLE_LABEL[ROLE]}</span>
+      <div class="actions-title">${ICON.notes} ${t("actionsTitle")}
+        <span class="who">${roleLabel(ROLE)}</span>
       </div>
       <ol class="steps">${items}</ol>
     </div>`;
@@ -1319,28 +1828,24 @@ function runGuidelineEngine(){
 
   let pqBlock = "";
   if (isPregLact){
-    const why = isPreg ? "pregnancy" : "lactation";
+    const why = isPreg ? t("whyPreg") : t("whyLact");
     pqBlock = `
       <div class="reg">
         <div class="reg-head">
           <span class="reg-n">2</span>
-          <span class="reg-kicker">Primaquine therapy</span>
-          <span class="reg-tagpos"><span class="badge badge-stop">Contraindicated</span></span>
+          <span class="reg-kicker">${t("regPQ")}</span>
+          <span class="reg-tagpos"><span class="badge badge-stop">${t("badgeContra")}</span></span>
         </div>
         <div class="drug">
           <div class="drug-icon stop">${ICON.ban}</div>
           <div class="drug-meta">
             <h3 class="drug-name stop">Primaquine</h3>
-            <div class="drug-sub"><span class="pill-tag neutral">Not to be given during ${why}</span></div>
+            <div class="drug-sub"><span class="pill-tag neutral">${t("fNotDuring")(why)}</span></div>
           </div>
         </div>
-        ${alertBox("danger","ban",
-          `<strong>Do NOT administer Primaquine during ${why}.</strong> ${isPreg
-            ? "Defer radical cure until after delivery and cessation of breastfeeding."
-            : "Defer radical cure until breastfeeding has ceased."}`)}
-        ${alertBox("info","info",
-          `<strong>This contraindication is caught by facility-level screening.</strong> At BHU / RHC level, clinical staff verify pregnancy, active lactation and age under 6 months before dispensing. At community level the patient is referred regardless — CHWs do not dispense Primaquine.`, "mt")}
-        ${referralNote(`Record the deferred Primaquine course in the patient's file and refer to the tagged BHU or RHC so radical cure can be scheduled once it is safe to give.`)}
+        ${alertBox("danger","ban", t("fPqContra")(why, isPreg))}
+        ${alertBox("info","info", t("pqContraInfo"), "mt")}
+        ${referralNote(t("referralDeferred"))}
       </div>`;
   } else {
     const mg = w ? `${fmt(pq.rate * w)} mg` : null;
@@ -1350,18 +1855,15 @@ function runGuidelineEngine(){
     function pqCourse(){
       const perDose = mg || `${pq.rate} mg/kg`;
       if (species === "pf"){
-        return `<ol class="course week short">${dayCard(1, perDose, "Single dose")}</ol>`;
+        return `<ol class="course week short">${dayCard(1, perDose, t("singleDose"))}</ol>`;
       }
       let cards = "";
       for (let d = 1; d <= 7; d++) cards += dayCard(d, perDose, "");
       return `<ol class="course week">${cards}</ol>`;
     }
 
-    const g6pd = ROLE === "community"
-      ? alertBox("warn","alert",
-          `<strong>G6PD haemolysis watch — your job during home follow-up.</strong> Tell the patient that <strong>dark or tea-coloured urine</strong> means stop Primaquine and return to the health facility immediately.`, "mt")
-      : alertBox("warn","alert",
-          `<strong>G6PD haemolysis watch — applies at both levels.</strong> Counsel every patient that <strong>dark or tea-coloured urine</strong> means stop Primaquine and return to the health facility immediately.`, "mt");
+    const g6pd = alertBox("warn","alert",
+      ROLE === "community" ? t("g6pdCommunity") : t("g6pdBoth"), "mt");
 
     if (ROLE === "community"){
       /* CHWs never hand Primaquine over, so the referral is the instruction and
@@ -1370,18 +1872,16 @@ function runGuidelineEngine(){
         <div class="reg">
           <div class="reg-head">
             <span class="reg-n">2</span>
-            <span class="reg-kicker">Primaquine therapy</span>
-            <span class="reg-tagpos"><span class="badge badge-stop">Refer — do not dispense</span></span>
+            <span class="reg-kicker">${t("regPQ")}</span>
+            <span class="reg-tagpos"><span class="badge badge-stop">${t("badgeReferNo")}</span></span>
           </div>
           ${laneFull(LANE.community, true)}
           <div class="info-only">
-            <div class="io-label">For information only — dispensed at the facility, not by you</div>
+            <div class="io-label">${t("ioLabel")}</div>
             <div class="io-body">
-              <strong>Primaquine</strong> — ${pq.rate} mg/kg ${species === "pf"
-                ? "as a single dose on Day 1"
-                : "once daily for 7 days, taken with food"}
-              ${mg ? `<span class="io-mg">${mg}${species === "pf" ? "" : " per dose"} at ${fmt(w)} kg</span>` : ""}
-              <br>Use this to tell the patient what to expect at the BHU / RHC.
+              ${t("fIoBody")(pq.rate, species === "pf")}
+              ${mg ? `<span class="io-mg">${t("fIoMg")(mg, species === "pf", fmt(w))}</span>` : ""}
+              <br>${t("ioTail")}
             </div>
           </div>
           ${laneCollapsed(LANE.facility)}
@@ -1392,28 +1892,26 @@ function runGuidelineEngine(){
         <div class="reg">
           <div class="reg-head">
             <span class="reg-n">2</span>
-            <span class="reg-kicker">Primaquine therapy</span>
-            <span class="reg-tagpos"><span class="badge badge-line">First-line regimen</span></span>
+            <span class="reg-kicker">${t("regPQ")}</span>
+            <span class="reg-tagpos"><span class="badge badge-line">${t("badgeFirstLine")}</span></span>
           </div>
           <div class="drug">
             <div class="drug-icon">${ICON.shield}</div>
             <div class="drug-meta">
               <h3 class="drug-name">Primaquine</h3>
               <div class="drug-sub">
-                <span class="pill-tag">${pq.rate} mg/kg body weight</span>
+                <span class="pill-tag">${t("fPqRate")(pq.rate)}</span>
                 <span class="pill-tag neutral">${pq.duration}</span>
               </div>
             </div>
           </div>
-          <div class="sched-label">${species === "pf"
-            ? "Single-dose schedule · given alongside ACT"
-            : "7-day radical cure schedule · one dose daily with food"}</div>
+          <div class="sched-label">${species === "pf" ? t("schedPF") : t("schedPV")}</div>
           ${pqCourse()}
           <div class="total">
-            <span class="total-key">${species === "pf" ? "Total dose" : "Course length"}</span>
+            <span class="total-key">${species === "pf" ? t("totalKeyPF") : t("totalKeyPV")}</span>
             <span class="total-val">${species === "pf"
-              ? `Single dose on Day 1${mg ? ` — ${mg}` : ` — ${pq.rate} mg/kg`}`
-              : `7 daily doses${mg ? ` of ${mg}` : ` of ${pq.rate} mg/kg`}, taken with food`}</span>
+              ? t("fTotalPF")(mg || `${pq.rate} mg/kg`)
+              : t("fTotalPV")(mg || `${pq.rate} mg/kg`)}</span>
           </div>
           ${pathways()}
           ${g6pd}
@@ -1430,7 +1928,7 @@ function runGuidelineEngine(){
       <div class="rx-head">
         <div class="rx-head-top">
           <div>
-            <p class="rx-eyebrow">Step 2 · Recommended protocol</p>
+            <p class="rx-eyebrow">${t("rxEyebrow")}</p>
             <h2 class="rx-title">${title}</h2>
           </div>
           ${badge}
@@ -1444,8 +1942,8 @@ function runGuidelineEngine(){
         <div class="reg">
           <div class="reg-head">
             <span class="reg-n">1</span>
-            <span class="reg-kicker">Blood-stage treatment</span>
-            <span class="reg-tagpos"><span class="badge badge-line">First-line regimen</span></span>
+            <span class="reg-kicker">${t("regBlood")}</span>
+            <span class="reg-tagpos"><span class="badge badge-line">${t("badgeFirstLine")}</span></span>
           </div>
           <div class="drug">
             <div class="drug-icon">${ICON.capsule}</div>
@@ -1456,7 +1954,7 @@ function runGuidelineEngine(){
           </div>
           ${bSchedule}
           <div class="total">
-            <span class="total-key">Total to dispense</span>
+            <span class="total-key">${t("totalDispense")}</span>
             <span class="total-val">${bTotal}</span>
           </div>
         </div>
@@ -1466,13 +1964,14 @@ function runGuidelineEngine(){
         ${actionPlan()}
 
         <div class="notes">
-          <div class="notes-title">${ICON.notes} Clinical notes &amp; administration</div>
+          <div class="notes-title">${ICON.notes} ${t("notesTitle")}</div>
           <div class="note-box">${clinicalHtml}</div>
         </div>
       </div>
     </div>`;
 }
 
+initLang();
 initRole();
 </script>
 </body>

@@ -181,6 +181,58 @@ rings on all interactive elements; `prefers-reduced-motion` disables animation. 
 
 ---
 
+## Language — English / Urdu
+
+A segmented `EN / اردو` switch sits in the letterhead next to the role chip. It is visible
+on the role gate too, so a user can pick their language before anything else.
+
+- **`S`** is the string table: `S.en` and `S.ur`, one key per user-facing string.
+  Both halves must carry **exactly the same key set** — a missing Urdu key silently falls
+  back to English via `t()`. To check:
+  `comm` the keys of the two blocks, or just diff them by eye after adding a string.
+- **`t(key)`** returns the active language's value. Strings that interpolate are stored as
+  **functions** and called: `t("fStepBlood")(drug, course)`. Those keys are prefixed `f`.
+- **Static markup** carries `data-i18n` (innerHTML), `data-i18n-ph` (placeholder) and
+  `data-i18n-aria` (aria-label); `applyStaticI18n()` walks them. Add the attribute rather
+  than hard-coding text, or the string will not switch.
+- **Stored** in `localStorage` under `nmtp-lang`, same try/catch treatment as the role.
+  `initLang()` runs before `initRole()`.
+
+### What stays in Latin script in Urdu
+
+Deliberate, do not "finish the translation":
+
+- **Drug names** — `Chloroquine`, `Artemether + Lumefantrine`, `Primaquine`, `Quinine`.
+  These must match what is printed on the pack the worker is holding.
+- **Species binomials** (`P. vivax`, `P. falciparum`), **units** (`mg/kg`, `kg`) and the
+  standard abbreviations (`AL`, `CQ`, `PQ`, `RDT`, `ACT`, `BHU`, `RHC`, `iCCM`, `CHW`,
+  `LHV`, `G6PD`, `DHQ`). Digits are Western (`0–9`), as in Pakistani practice.
+
+### The Urdu register is deliberately plain
+
+The Urdu is read by **community health workers with limited reading ability**, so it is
+written in short sentences and everyday spoken words — `منع ہے` not `ممنوع`, `لکھیں` not
+`اندراج کریں`, `بعد میں` not `مؤخر`, `ہسپتال بھیجیں` alongside `ریفر کریں`. Do not
+"improve" it into formal Urdu. **Medical substance is identical to the English** — only
+the wording is plainer, and that constraint holds for any new string.
+
+### RTL and typography
+
+- `setLang()` stamps `lang` and `dir` on `<html>`. `html[lang="ur"]` carries typography,
+  `[dir="rtl"]` carries the mirroring — one block near the end of the stylesheet, before
+  print.
+- `--font-ur` is a **system** Nastaliq→Naskh→Segoe UI stack. No web fonts, per the
+  no-external-requests rule; Nastaliq simply renders where it is installed.
+- `html[lang="ur"] *{letter-spacing:normal}` and the `text-transform:none` list exist
+  because tracking and uppercasing break Arabic-script shaping. Keep them.
+- Urdu reading copy is set **larger and looser** than the English (15px / 1.85) for the
+  low-literacy audience. Those sizes are declared *after* the mobile media queries and at
+  or above the phone values, so they win on both — that ordering is load-bearing.
+- New direction-sensitive CSS needs an `[dir="rtl"]` counterpart. Use `.badge-right`
+  rather than an inline `margin-left:auto`, which cannot be mirrored.
+
+---
+
 ## Clinical logic — `runGuidelineEngine()`
 
 Reads the four selects, then branches. **The clinical content is authoritative — do not
