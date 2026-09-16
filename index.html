@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#13306B">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Clinical decision support for the National Malaria Treatment Protocol — weight-based dosing, Primaquine therapy and referral guidance. Indus Hospital &amp; Health Network.">
 <title>National Malaria Treatment Protocol | Indus Hospital &amp; Health Network</title>
 <style>
@@ -598,6 +603,19 @@ input.ctl[type=number]{-moz-appearance:textfield;}
 .foot strong{color:var(--ink-2);font-weight:700;}
 .foot-disclaimer{max-width:60ch;}
 
+/* Version stamp. Offline copies — a saved file, or the Android build — cannot
+   update themselves, so a supervisor must be able to read which version a
+   phone is carrying without opening anything. Keep it legible; do not shrink
+   it into a footnote. */
+.foot-version{
+  width:100%;margin-top:2px;padding-top:11px;border-top:1px solid var(--line-soft);
+  display:flex;align-items:center;gap:7px;
+  font-size:11.5px;font-weight:700;color:var(--ink-2);
+  font-variant-numeric:tabular-nums;
+}
+.foot-version svg{width:13px;height:13px;color:var(--ih-blue);flex:none;}
+@media (max-width:640px){ .foot-version{font-size:12.5px;} }
+
 /* ---------- Motion ------------------------------------------ */
 @keyframes rise{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:none;}}
 #protocol-output > *{animation:rise .2s ease-out;}
@@ -1029,6 +1047,10 @@ html[lang="ur"] .reg-kicker{font-size:13px;}
       <strong>Indus Hospital &amp; Health Network</strong><br>
       Directorate of MEAL &amp; Malaria Control Program
     </div>
+    <div class="foot-version">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      <span id="app-version"></span>
+    </div>
   </footer>
 
 </div>
@@ -1082,6 +1104,16 @@ const ICON = {
        (AL, CQ, PQ, RDT, BHU, RHC, iCCM, CHW, LHV, G6PD, DHQ, ACT)
    Interpolating strings are stored as functions and called: t("fX")(a).
    ============================================================ */
+/* ============================================================
+   VERSION
+   Shown in the footer and carried into the offline Android build.
+   A phone running an old copy cannot update itself, so this is the
+   only way a supervisor can tell which protocol version a worker is
+   dispensing from. Bump both on every content change, and bump the
+   CACHE name in sw.js to match.
+   ============================================================ */
+const APP_VERSION = "1.0.0";
+
 const LANG_KEY = "nmtp-lang";
 let LANG = "en";
 
@@ -1136,6 +1168,8 @@ en:{
   btnReset:"Reset",
   footDisclaimer:"<strong>Clinical decision support only.</strong> Summarises the National Malaria Treatment Guidelines and does not replace clinical judgement. Confirm diagnosis by microscopy or RDT before initiating treatment, and confirm tablet strength against the source before dispensing.",
   footOrg:"<strong>Indus Hospital &amp; Health Network</strong><br>Directorate of MEAL &amp; Malaria Control Program",
+  buildDate:"16 September 2026",
+  fVersion:(v,d)=>`Version ${v} · Updated ${d}`,
 
   age:{ u6m:"< 6 mo (< 5 kg)", g1:"6 mo – 3 yr (5–14 kg)", g2:"3 – 8 yr (15–24 kg)",
         g3:"8 – 12 yr (25–34 kg)", g4:"Adult > 12 yr (> 35 kg)" },
@@ -1312,6 +1346,8 @@ ur:{
   btnReset:"دوبارہ شروع",
   footDisclaimer:"<strong>یہ صرف علاج میں مدد کے لیے ہے۔</strong> یہ ملیریا کے علاج کی قومی ہدایات کا خلاصہ ہے اور ڈاکٹر کے فیصلے کی جگہ نہیں لے سکتا۔ علاج شروع کرنے سے پہلے خون کے ٹیسٹ (مائیکروسکوپی یا RDT) سے ملیریا پکا کر لیں۔ دوا دینے سے پہلے گولی کی طاقت (mg) ڈبے پر دیکھ لیں۔",
   footOrg:"<strong>انڈس ہسپتال اینڈ ہیلتھ نیٹ ورک</strong><br>ڈائریکٹوریٹ آف MEAL اور ملیریا کنٹرول پروگرام",
+  buildDate:"16 ستمبر 2026",
+  fVersion:(v,d)=>`ورژن ${v} · اپ ڈیٹ ${d}`,
 
   age:{ u6m:"< 6 ماہ (< 5 kg)", g1:"6 ماہ – 3 سال (5–14 kg)", g2:"3 – 8 سال (15–24 kg)",
         g3:"8 – 12 سال (25–34 kg)", g4:"بالغ > 12 سال (> 35 kg)" },
@@ -1448,6 +1484,8 @@ function applyStaticI18n(){
   document.title = t("docTitle");
   const md = document.querySelector('meta[name="description"]');
   if (md) md.setAttribute("content", t("metaDesc"));
+  document.getElementById("app-version").textContent =
+    t("fVersion")(APP_VERSION, t("buildDate"));
 }
 
 function setLang(lang, skipRender){
@@ -1995,6 +2033,19 @@ function runGuidelineEngine(){
 
 initLang();
 initRole();
+
+/* ------------------------------------------------------------
+   Offline support. Registration is guarded on http/https because
+   the same file is also opened as a local file and is bundled
+   into the Android build, where the origin is file:// — calling
+   register() there throws and would abort the rest of the script.
+   Failure is always non-fatal: the page works without it.
+   ------------------------------------------------------------ */
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").catch(function(){ /* offline caching unavailable */ });
+  });
+}
 </script>
 </body>
 </html>

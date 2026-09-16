@@ -61,12 +61,22 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 
 ```
 MalariaTreatmentGuide/
-├── index.html    ← the entire application (HTML + CSS + JS in one file)
-└── CLAUDE.md     ← this file
+├── index.html      ← the entire application (HTML + CSS + JS in one file)
+├── manifest.json   ← PWA manifest: installable, standalone, portrait
+├── sw.js           ← service worker: guarantees offline
+├── icon-192.png    ← app icons, rendered from the inline logo SVG
+├── icon-512.png       (placeholders — swap for the official brand asset)
+└── CLAUDE.md       ← this file
 ```
 
-Keep it a single file. It is deliberately dependency-free so it loads fast on poor
-connections and could be used offline if needed.
+**The application is still one file.** The four companions exist only to make it
+installable and reliably offline; none of them is application logic, and nothing is
+fetched from a third party. Do not start splitting CSS or JS out of `index.html`.
+
+The original "keep it a single file" rule was really about *no external requests and
+works offline* — a same-origin manifest and service worker serve that goal rather than
+breaking it. Before these existed, offline relied on the browser's ordinary HTTP cache,
+which is evicted silently; a CHW could open the page in the field and get nothing.
 
 ---
 
@@ -191,6 +201,36 @@ always carry the case summary. Both render from the same `ctxParts` array, which
 
 `aria-live="polite"` on `#protocol-output` announces protocol changes; `:focus-visible`
 rings on all interactive elements; `prefers-reduced-motion` disables animation. Keep these.
+
+---
+
+## Versioning and offline distribution
+
+`APP_VERSION` near the top of the script drives the footer stamp
+(`Version 1.0.0 · Updated 16 September 2026`, localised via `fVersion` / `buildDate`).
+
+**Why it is there, and why it must stay legible:** copies of this tool run offline — a
+saved file today, an Android build next. Those copies *cannot update themselves*. If the
+national protocol changes, a phone carrying an old build keeps giving old doses, and
+neither the worker nor their supervisor can tell. The stamp is the only way to audit
+which version a handset is on. Do not shrink it into a footnote or drop it from print.
+
+**On every content change, bump all three together:**
+
+1. `APP_VERSION` in `index.html`
+2. `buildDate` in **both** `S.en` and `S.ur`
+3. `CACHE` in `sw.js` — otherwise returning phones keep serving the old shell
+
+### Service worker strategy is network-first, deliberately
+
+`sw.js` tries the network with a 3-second timeout and falls back to cache. The obvious
+choice for an offline tool is cache-first, and it is the wrong one here: this is a dosing
+tool, so a phone with signal must get the current protocol even at the cost of a slower
+load. Cache is the safety net, not the default.
+
+Registration is guarded on `http(s)` because the same `index.html` is opened as a local
+file and is bundled into the Android build, where the origin is `file://` and
+`register()` throws.
 
 ---
 
@@ -423,6 +463,35 @@ surfacing rather than silently resolving.
 
 - Verify changes against the **live URL**, not just the local file — confirm the deploy
   actually landed before reporting success.
-- `Ctrl+F5` to bypass browser cache when checking.
-- Node is **not installed** on this machine, so there is no local linter or test runner.
-  Validate by loading the page in a browser.
+- `Ctrl+F5` to bypass browser cache when checking. Once a service worker is registered,
+  prefer **`Ctrl+Shift+R`** or a private window — a normal reload can be served by the
+  worker and hide your change.
+- **Node *is* installed** (v24.19.0 + npm 11.17.0) — an earlier note here said otherwise.
+  There is still no test runner, but two cheap checks are worth running before a push:
+
+  ```bash
+  # syntax-check the page's inline script (catches what brace-counting cannot)
+  awk '/^<script>$/{f=1;next} /^<\/script>$/{f=0} f' index.html > /tmp/app.js
+  node --check /tmp/app.js
+  node --check sw.js
+  node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8'))"
+  ```
+
+- **Headless Edge is the closest thing to a test harness here.** It runs the page's JS,
+  so it catches what grepping the source cannot:
+
+  ```bash
+  msedge --headless=new --disable-gpu --window-size=390,844 \
+         --virtual-time-budget=5000 --dump-dom "file:///.../index.html"
+  ```
+
+  Inject a probe before `initRole();` to force a role/language and write findings into
+  `document.title`. Note `--dump-dom` exits as soon as the DOM is ready, so anything
+  asynchronous (service worker install) needs the browser left running instead, reporting
+  back to a local server.
+
+  **A grep for English strings in the raw file will mislead you** — the page carries the
+  full `S.en` dictionary inside its own `<script>`. Strip the script block before judging
+  what actually rendered.
+
+- Python is **not** available (only the Windows Store stub).
