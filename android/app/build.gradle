@@ -62,23 +62,30 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    // The APK must carry the guide. CI copies index.html and friends into
-    // src/main/assets before building; this fails the build loudly if that
-    // step was skipped, rather than shipping an APK that opens to a blank
-    // screen in the field.
-    tasks.register("verifyAssets") {
-        doLast {
-            def f = file("src/main/assets/index.html")
-            if (!f.exists() || f.length() < 10000) {
-                throw new GradleException(
-                    "src/main/assets/index.html is missing or truncated — the APK would " +
-                    "install and open to nothing. Copy the site into assets/ before building.")
-            }
+}
+
+/*
+ * The APK must actually carry the guide. CI copies index.html into
+ * src/main/assets before building; without this check a missed copy step
+ * would produce an APK that installs happily and opens to a blank screen —
+ * discovered by a health worker, offline, with a patient in front of them.
+ *
+ * Declared at the top level rather than inside android { }, where `tasks`
+ * only resolves by falling through the extension to the project.
+ */
+tasks.register("verifyAssets") {
+    doLast {
+        def f = file("src/main/assets/index.html")
+        if (!f.exists() || f.length() < 10000) {
+            throw new GradleException(
+                "src/main/assets/index.html is missing or truncated — the APK would " +
+                "install and open to nothing. Copy the site into assets/ before building.")
         }
     }
-    tasks.configureEach { t ->
-        if (t.name.startsWith("merge") && t.name.endsWith("Assets")) {
-            t.dependsOn "verifyAssets"
-        }
+}
+
+tasks.configureEach { t ->
+    if (t.name.startsWith("merge") && t.name.endsWith("Assets")) {
+        t.dependsOn "verifyAssets"
     }
 }
